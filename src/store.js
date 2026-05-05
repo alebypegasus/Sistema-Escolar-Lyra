@@ -42,7 +42,13 @@ const db = {
   
   // Identidade Visual
   get customLogo() { return localStorage.getItem('lyra_custom_logo'); },
-  saveLogo(url) { localStorage.setItem('lyra_custom_logo', url); }
+  saveLogo(url) { localStorage.setItem('lyra_custom_logo', url); },
+  get customColor() { return localStorage.getItem('lyra_custom_color'); },
+  saveColor(hex) { localStorage.setItem('lyra_custom_color', hex); },
+  get themeConfig() { return JSON.parse(localStorage.getItem('lyra_theme_config')) || null; },
+  saveThemeConfig(config) { localStorage.setItem('lyra_theme_config', JSON.stringify(config)); },
+  get schoolInfo() { return JSON.parse(localStorage.getItem('lyra_school_info')) || { name: 'Escola Lyra', cnpj: '', address: '', phone: '' }; },
+  saveSchoolInfo(info) { localStorage.setItem('lyra_school_info', JSON.stringify(info)); }
 };
 
 /**
@@ -98,6 +104,30 @@ export const State = {
 
   getLogo() {
     return this.db.customLogo || 'https://cdn.brandfetch.io/idZAgjz-AF/w/172/h/40/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1770247213514';
+  },
+
+  setCustomColor(hex) {
+    this.db.saveColor(hex);
+  },
+
+  getCustomColor() {
+    return this.db.customColor || '#3b82f6';
+  },
+
+  setThemeConfig(config) {
+    this.db.saveThemeConfig(config);
+  },
+
+  getThemeConfig() {
+    return this.db.themeConfig || {};
+  },
+
+  setSchoolInfo(info) {
+    this.db.saveSchoolInfo(info);
+  },
+
+  getSchoolInfo() {
+    return this.db.schoolInfo;
   },
 
   login(reg, pass) {

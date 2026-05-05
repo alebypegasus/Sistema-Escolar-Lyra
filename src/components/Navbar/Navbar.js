@@ -26,8 +26,9 @@ export function getNavbarHTML(user) {
     <header class="navbar-wrapper">
       <div class="navbar-content">
         <!-- Logo isolado -->
-        <div class="navbar-brand">
-          <img src="${State.getLogo()}" alt="Logo" />
+        <div class="navbar-brand flex-row flex-align-center gap-12">
+          <img src="${State.getLogo()}" alt="Logo" style="max-height: 40px; display: block;" />
+          ${State.getSchoolInfo().name ? `<span class="fw-bold tracking-tight hide-on-mobile text-sm" style="color: var(--text-primary); border-left: 1px solid var(--border-color); padding-left: 12px; margin-left: 4px;">${State.getSchoolInfo().name}</span>` : ''}
         </div>
 
         <!-- Links Centro (Apenas Desktop - escondido no celular via CSS) -->
@@ -40,8 +41,11 @@ export function getNavbarHTML(user) {
           <button class="nav-btn" data-nav="profile">Minha Conta</button>
         </nav>
 
-        <!-- Ações da Direita (Sino de Notificações e Botão Sair) -->
-        <div class="navbar-actions">
+        <!-- Ações da Direita (Data/Hora, Sino de Notificações e Botão Sair) -->
+        <div class="navbar-actions flex-align-center gap-16">
+          <!-- Live Clock -->
+          <div id="system-live-clock" class="text-xs text-secondary font-mono bg-panel px-12 py-4 border-radius-pill hide-on-mobile border"></div>
+          
           <button id="btn-notifications" class="action-btn" title="Notificações">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -130,6 +134,20 @@ export function setupNavbarInteractions(onNavigate, onLogout, onShowNotification
     notifBtn.addEventListener('click', () => {
       if (onShowNotifications) onShowNotifications(); // Mostra o modal
     });
+  }
+
+  // Setup Live System Clock
+  const clockEl = document.getElementById('system-live-clock');
+  if (clockEl) {
+    const updateTime = () => {
+      const now = new Date();
+      clockEl.textContent = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    };
+    updateTime();
+    // Use interval attached to window so it doesn't duplicate if called again, 
+    // though in a SPA it might be better managed by state. We clear the old one just in case.
+    if (window.liveClockInterval) clearInterval(window.liveClockInterval);
+    window.liveClockInterval = setInterval(updateTime, 1000);
   }
 }
 

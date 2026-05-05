@@ -34,9 +34,38 @@ import './style.css'; // Carrega nossos novos CSS automáticos
  * Dá o pontapé inicial na aplicação
  */
 document.addEventListener('DOMContentLoaded', () => {
+  applyBrandColor();
   setupLogin(); // Inicia a escuta da tela de login
   setupGlobalShortcuts(); // Inicia a escuta do teclado (Atalhos)
 });
+
+export function applyBrandColor() {
+  const color = State.getCustomColor();
+  if (color && color !== '#3b82f6') {
+    document.documentElement.style.setProperty('--accent', color);
+    document.documentElement.style.setProperty('--accent-color', color);
+    // Simple way to compute a light version with opacity (not perfect but works in modern browsers)
+    document.documentElement.style.setProperty('--accent-light', `${color}25`); 
+    document.documentElement.style.setProperty('--accent-hover', `${color}dd`); 
+  } else {
+    document.documentElement.style.removeProperty('--accent');
+    document.documentElement.style.removeProperty('--accent-color');
+    document.documentElement.style.removeProperty('--accent-light');
+    document.documentElement.style.removeProperty('--accent-hover');
+  }
+
+  const themeConfig = State.getThemeConfig();
+  const applyIfSet = (key, val) => {
+     if (val) document.documentElement.style.setProperty(key, val);
+     else document.documentElement.style.removeProperty(key);
+  };
+  
+  applyIfSet('--bg-body', themeConfig.bgBody);
+  applyIfSet('--bg-surface', themeConfig.bgSurface);
+  applyIfSet('--bg-panel', themeConfig.bgPanel);
+  applyIfSet('--text-primary', themeConfig.textPrimary);
+  applyIfSet('--text-secondary', themeConfig.textSecondary);
+}
 
 /**
  * Função responsável por criar Atahos Inteligentes pelo teclado (Ex: Apertar "Enter" para Logar)

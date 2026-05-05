@@ -98,14 +98,27 @@ export function renderGrades(container, State) {
               </tr>
               ${h.subjects ? `
               <tr id="details-${h.semester.replace('.','-')}" class="details-row bg-surface hidden-row">
-                <td colspan="4" class="details-cell p-16-24 outline-top">
-                  <div class="grid-auto-fit gap-16">
+                <td colspan="4" class="details-cell p-24" style="background: var(--bg-panel); border-top: 1px solid var(--border-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                  <div class="mb-12">
+                     <h4 class="text-sm fw-bold uppercase tracking-wide text-secondary mb-4">Detalhamento Acadêmico - ${h.semester}</h4>
+                     <p class="text-xs text-secondary">Abaixo estão as notas e frequências obtidas na consolidação deste período.</p>
+                  </div>
+                  <div class="grid-auto-fit gap-16" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
                     ${h.subjects.map(subh => `
-                      <div class="summary-box panel-bg">
-                        <div class="fw-bold text-sm mb-4">${subh.name}</div>
-                        <div class="flex-between-center text-xs text-secondary">
-                          <span>Nota: <strong class="${subh.grade >= 7 ? 'text-success' : 'text-danger'}">${subh.grade.toFixed(1)}</strong></span>
-                          <span>Frequência: <strong>${subh.attendance}%</strong></span>
+                      <div class="card p-16" style="background: var(--bg-surface); border: 1px solid var(--border-color);">
+                        <div class="fw-bold text-sm mb-12 flex-align-center gap-8">
+                           <div style="width: 8px; height: 8px; border-radius: 50%; background: ${subh.grade >= 7 ? 'var(--success-color)' : 'var(--danger-color)'};"></div>
+                           ${subh.name}
+                        </div>
+                        <div class="flex-between-center text-sm">
+                          <div class="flex-col gap-4">
+                             <span class="text-xs text-secondary">Média Final</span>
+                             <strong class="${subh.grade >= 7 ? 'text-success' : 'text-danger'} text-lg">${subh.grade.toFixed(1)}</strong>
+                          </div>
+                          <div class="flex-col gap-4 text-right">
+                             <span class="text-xs text-secondary">Frequência</span>
+                             <strong class="${subh.attendance >= 75 ? 'text-text-primary' : 'text-danger'} text-lg">${subh.attendance}%</strong>
+                          </div>
                         </div>
                       </div>
                     `).join('')}
@@ -239,19 +252,28 @@ export function setupStudentInteractions(State, navigateTo) {
     });
   }
 
-  // Exportar notas HTML para CSV
+  // Exportar notas HTML para XLS
   document.getElementById('btn-export-my-grades')?.addEventListener('click', () => {
-    let csv = "Disciplina,Professor,Nota,Frequencia\n";
-    State.user.subjects.forEach(sub => {
-      csv += `"${sub.name}","${sub.professor}",${sub.grade.toFixed(1)},${sub.attendance}\n`;
-    });
-    const blob = new Blob([csv], { type: 'text/csv' });
+    let tableHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta charset="UTF-8"></head>
+      <body>
+        <table border="1">
+          <tr><th>Disciplina</th><th>Professor</th><th>Nota</th><th>Frequencia</th></tr>
+          ${State.user.subjects.map(sub => `<tr><td>${sub.name}</td><td>${sub.professor}</td><td>${sub.grade.toFixed(1).replace('.',',')}</td><td>${sub.attendance}%</td></tr>`).join('')}
+        </table>
+      </body>
+      </html>
+    `;
+    const blob = new Blob(['\ufeff' + tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `boletim_${State.user.name.replace(/\s+/g, '_')}.csv`;
+    a.download = `boletim_${State.user.name.replace(/\s+/g, '_')}.xls`;
     a.click();
-    setTimeout(() => window.print(), 500); // Trigger impressão nativa
+    
+    // Pequena pausa para a impressão nativa (PDF)
+    setTimeout(() => window.print(), 800);
   });
 
   // Modal de justificativas de falta

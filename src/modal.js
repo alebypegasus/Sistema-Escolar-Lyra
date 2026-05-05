@@ -38,7 +38,7 @@ export function renderActionButtons() {
     document.body.appendChild(container);
   }
 
-  if (State.userType !== 'teacher') {
+  if (State.userType !== 'teacher' || State.currentPage === 'admin' || State.currentPage === 'presentation') {
     container.style.display = 'none';
     return;
   }
