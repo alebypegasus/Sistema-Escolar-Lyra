@@ -1,0 +1,16 @@
+/* ==========================================
+   RESET CSS
+   Remove margens, preenchimentos padrão e 
+   define box-sizing para um layout mais fácil.
+   ========================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Fonte padrão para o sistema inteiro */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color-scheme: light dark;
+}

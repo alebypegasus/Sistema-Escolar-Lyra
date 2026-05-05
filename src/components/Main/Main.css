@@ -1,0 +1,78 @@
+/*
+  ========================================================
+  MAIN - CSS
+  Controla a área central do aplicativo e as transições 
+  de tela (roteamento SPA visual).
+  ========================================================
+*/
+
+/* Onde tudo (Menos navbar e footer) vai habitar e se adequar resonsivamente */
+.main-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  /* Top-padding de 80px compensa o height da navbar fixa de 64px, e descola um pouco o main conteudo do topo */
+  padding: 80px 24px 40px 24px; 
+  /* Calc dinamico que força o main a ocupar o espaco livre inteiro p/ empurrar o footer pra baixo */
+  min-height: calc(100vh - 60px); 
+  display: flex;
+  flex-direction: column;
+}
+
+/* Saudação customizada da Dashboard */
+.main-greeting {
+  margin-bottom: 32px;
+  background-color: var(--bg-surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--border-glass);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.main-greeting h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.main-greeting p {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* Container fantasma e flexivel, estica atë o chao se o app for pequeno */
+.main-view-container {
+  flex: 1; 
+  position: relative;
+}
+
+/* Divs que guardam o conteudo especifico de cada página. Inicia Invisível */
+.page-view {
+  display: none;
+  /* A animação agora é controlada no components.css via .page-view.active */
+}
+
+/* Quando "Active" na Main.js a div vai ser de fato desenhada pelo browser */
+.page-view.active {
+  display: block;
+}
+
+/* Menos padding na versao cell, e ignorar celular pra compessar o Menu mobile de baixo*/
+@media (max-width: 768px) {
+  .main-wrapper {
+    padding-top: 80px; 
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .main-greeting {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .main-greeting h1 {
+    font-size: 24px;
+  }
+}

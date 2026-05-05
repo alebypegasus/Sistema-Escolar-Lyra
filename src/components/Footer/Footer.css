@@ -1,0 +1,67 @@
+/*
+  ========================================================
+  FOOTER - CSS
+  Controla a área do rodapé do sistema.
+  Com tema Liquid Glass (translúcido e elegante).
+  ========================================================
+*/
+
+/* O container principal do Rodapé */
+.footer-wrapper {
+  background-color: var(--bg-surface); /* Cor de fundo translúcida via rgba no theme.css */
+  backdrop-filter: var(--blur); /* Efeito de vidro que borra o que tem atrás */
+  -webkit-backdrop-filter: var(--blur); /* Suporte para browsers baseados em WebKit (Safari) */
+  border-top: 1px solid var(--border-glass); /* Bordinha leve superior */
+  padding: 32px 24px;
+  margin-top: 40px;
+  color: var(--text-secondary); /* Usa a cor de texto suave */
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Centralizador de conteúdo limitando a largura em telas muito grandes */
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex; /* Display grid unidimensional (flex) */
+  flex-direction: column; /* Empilha o texto de cima p/ baixo */
+  gap: 12px;
+  align-items: center; /* Alinha no centro (eixo X) */
+  justify-content: center; /* Alinha no centro (eixo Y) */
+}
+
+/* Título de Marca no Rodapé */
+.footer-brand {
+  font-weight: 600; /* Texto mais gordinho/negrito */
+  color: var(--text-primary);
+}
+
+/* Lista invisível (sem bolinhas) para os links */
+.footer-links {
+  display: flex;
+  gap: 16px;
+  list-style: none; /* Tira as bolinhas que a tag <ul> gera */
+  padding: 0;
+  margin: 0;
+}
+
+/* Estilo individual para cada LInk */
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none; /* Tira aquele sublinhado feio padrão */
+  transition: color 0.2s; /* Quando trocar de cor, faça numa animação de 0.2s */
+}
+
+/* Quando passa o mouse no Link, muda de cor (Hover state) */
+.footer-links a:hover {
+  color: var(--accent-color);
+}
+
+/* Adaptação para celular (responsividade) */
+@media (max-width: 768px) {
+  .footer-wrapper {
+    /* Como temos uma bottom bar flutuando nos celulares, damos esse espaço a mais de 60px p/ não ficar por baixo. */
+    padding-bottom: calc(32px + 60px); 
+  }
+}
+

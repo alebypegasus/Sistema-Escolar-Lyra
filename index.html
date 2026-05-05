@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema Escolar Lyra</title>
+  
+  <!-- Carregando os estilos base -->
+  <!-- Nosso estilo principal e variavéis globais -->
+  <link rel="stylesheet" href="/src/style.css">
+  
+  <!-- Referenciando a fonte Inter do Google Fonts (Fonte moderna e limpa) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ==========================================
+       TELA DE LOGIN
+       Apresentação minimalista ao usuário
+       ========================================== -->
+  <!-- A "div" principal do login que ocupa a tela toda com as propriedades do "Liquid Glass" (glassmorphism) -->
+  <div id="login-screen" class="login-wrapper">
+    <!-- O Cardzinho retangular no meio da Tela -->
+    <div class="login-card">
+      <div class="login-logo text-center mb-24">
+        <img src="https://cdn.brandfetch.io/idZAgjz-AF/w/172/h/40/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1770247213514" alt="Firjan Senai" class="logo-img-large" />
+      </div>
+
+      <!-- Seleção de Portal -->
+      <div class="flex-row gap-4 mb-24 bg-panel border-radius-12 p-4" id="login-tabs">
+        <button class="flex-1 p-8 text-xs fw-bold border-radius-8 transition-all active" data-mode="academic">Portal Acadêmico</button>
+        <button class="flex-1 p-8 text-xs fw-bold border-radius-8 transition-all" data-mode="admin">Secretaria</button>
+      </div>
+
+      <!-- O formulário onde preenchemos login e senha -->
+      <form id="login-form">
+        <div class="input-group">
+          <label id="label-user">Matrícula / Usuário</label>
+          <input type="text" id="login-registration" class="input-field" placeholder="p1 (Prof), 2024-0042 (Aluno)" required />
+        </div>
+        <div class="input-group">
+          <label>Senha</label>
+          <input type="password" id="login-password" class="input-field" placeholder="Digite sua senha" required />
+        </div>
+        <div id="login-error" class="error-msg hidden">Credenciais inválidas para este portal.</div>
+        
+        <button type="submit" class="btn-primary w-full mt-12 p-12 fw-bold" id="btn-login-submit">Acessar Portal Acadêmico</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       INTERFACE LOGADA
+       Raízes ("Roots") onde os componentes Navbar, Main e Footer 
+       serão injetados dinamicamente via JavaScript depois do Login.
+       A classe "hidden" faz não aparecer na tela.
+       ========================================== -->
+  <div id="app-screen" class="hidden">
+    <!-- O código de Navbar.js irá derramar seu HTML aqui -->
+    <div id="navbar-root"></div>
+    
+    <!-- O código de Main.js irá derramar o miolo (Dashboard, Notas, etc) aqui -->
+    <div id="main-root"></div>
+    
+    <!-- O código de Footer.js vai despejar o rodapé aqui -->
+    <div id="footer-root"></div>
+  </div>
+
+  <!-- ==========================================
+       MODAL GLOBAL (POP UP)
+       Um container genérico invisível (hidden) que pula na tela nos pedindo ações
+       ou mostrando detalhes rápidos com fundo escurecido.
+       ========================================== -->
+  <div id="global-modal" class="modal-overlay hidden">
+    <div class="modal-content" id="global-modal-content">
+      <!-- O corpo do modal será injetado pelo JavaScript de acordo com o que se pede -->
+    </div>
+  </div>
+
+  <!-- Chama o Maestro de tudo (o script base em ESModule) -->
+  <script type="module" src="/src/script.js"></script>
+</body>
+</html>

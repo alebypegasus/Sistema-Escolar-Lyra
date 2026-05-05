@@ -1,0 +1,200 @@
+/* 
+  ========================================================
+  NAVBAR - CSS
+  Este arquivo controla o visual da barra de navegação.
+  ========================================================
+*/
+
+/* Container geral da navbar */
+.navbar-wrapper {
+  background-color: var(--bg-surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-bottom: 1px solid var(--border-glass);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-content {
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Marca (Logo) */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.navbar-brand img {
+  height: 32px;
+  width: auto;
+}
+
+/* Links de Navegação (Desktop) */
+.navbar-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.nav-btn.active {
+  background-color: var(--bg-active);
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+/* Ações (Notificações, Logout) */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.action-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: var(--danger-color);
+  color: white;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-surface);
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  color: var(--danger-color);
+  cursor: pointer;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: var(--danger-light);
+}
+
+/* ========================================================
+   RESPONSIVO (CELULARES) - BOTTOM NAVIGATION BAR
+   A navegação passa para a parte inferior nos celulares, 
+   enquanto a logo fica no topo (estilo App).
+   ======================================================== */
+@media (max-width: 768px) {
+  .navbar-content {
+    justify-content: space-between;
+  }
+  
+  /* Esconde os links no topo */
+  .navbar-nav {
+    display: none;
+  }
+
+  /* Cria a barra inferior fixa para mobile */
+  .navbar-mobile-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-surface);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border-top: 1px solid var(--border-glass);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    box-shadow: 0 -1px 10px rgba(0,0,0,0.05);
+    z-index: 100;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .nav-btn-mobile {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .nav-btn-mobile svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .nav-btn-mobile.active {
+    color: var(--accent-color);
+  }
+
+  /* Compensa o conteúdo principal para não ser coberto pela bottom bar */
+  body {
+    padding-bottom: 70px;
+  }
+}
+
+/* Esconder barra mobile no desktop */
+@media (min-width: 769px) {
+  .navbar-mobile-bottom {
+    display: none;
+  }
+}

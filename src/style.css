@@ -1,0 +1,12 @@
+/* ==========================================
+   FIRJAN SENAI - ARQUIVO PRINCIPAL DE ESTILOS
+   
+   IMPORTANDO MÓDULOS DE ESTILO 
+   Aqui concentramos a chamada para todas as partes da nossa folha de estilos.
+   Deste modo as partes ficam mais limpas e isoladas.
+   ========================================== */
+
+@import url('./styles/reset.css');
+@import url('./styles/theme.css');
+@import url('./styles/components.css');
+@import url('./styles/pages.css');

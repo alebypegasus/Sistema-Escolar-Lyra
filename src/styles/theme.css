@@ -1,0 +1,104 @@
+/* ==========================================
+   SISTEMA DE TEMAS E CORES (LIQUID GLASS)
+   O tema será automático pelo sistema.
+   ========================================== */
+
+:root {
+  /* TEMA CLARO Padrão - Liquid Glass */
+  --bg-body: #f8fafc;
+  --bg-surface: rgba(255, 255, 255, 0.75);
+  --bg-panel: rgba(255, 255, 255, 0.5);
+  --bg-hover: rgba(255, 255, 255, 0.9);
+  --bg-active: rgba(226, 232, 240, 0.8);
+  
+  --border: rgba(203, 213, 225, 0.5);
+  --border-color: rgba(203, 213, 225, 0.5);
+  --border-radius: 12px;
+  --border-glass: rgba(255, 255, 255, 0.6);
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  /* Logotipo Firjan SENAI */
+  --accent: #004ea2;
+  --accent-color: #004ea2;
+  --accent-light: rgba(0, 78, 162, 0.08);
+  --accent-hover: #003a7a;
+  
+  --success: #16a34a;
+  --success-color: #16a34a;
+  --success-light: rgba(22, 163, 74, 0.15);
+  
+  --danger: #ef4444;
+  --danger-color: #ef4444;
+  --danger-light: rgba(239, 68, 68, 0.15);
+  
+  --warning: #f59e0b;
+  --warning-color: #f59e0b;
+
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 32px rgba(31, 38, 135, 0.07);
+  --shadow: var(--shadow-sm);
+  --blur: blur(16px);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-body: #0f172a;
+    --bg-surface: rgba(30, 41, 59, 0.65);
+    --bg-panel: rgba(15, 23, 42, 0.4);
+    --bg-hover: rgba(51, 65, 85, 0.8);
+    --bg-active: rgba(71, 85, 105, 0.8);
+    
+    --border: rgba(255, 255, 255, 0.08);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-glass: rgba(255, 255, 255, 0.04);
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    
+    /* Firjan SENAI Colors - slightly lighter for dark mode contrast */
+    --accent: #2c7be5;
+    --accent-color: #2c7be5;
+    --accent-light: rgba(44, 123, 229, 0.15);
+    --accent-hover: #1a68d1;
+    
+    --success: #22c55e;
+    --success-color: #22c55e;
+    --success-light: rgba(34, 197, 94, 0.15);
+    
+    --danger: #ef4444;
+    --danger-color: #ef4444;
+    --danger-light: rgba(239, 68, 68, 0.15);
+    
+    --warning: #fbbf24;
+    --warning-color: #fbbf24;
+    
+    --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow: var(--shadow-sm);
+    --blur: blur(16px);
+    color-scheme: dark;
+  }
+}
+
+body {
+  background-color: var(--bg-body);
+  /* Gradiente radial subtil para enriquecer o efeito glass */
+  background-image: 
+    radial-gradient(at 0% 0%, var(--accent-light) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, var(--accent-light) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Utilitários Gerais */
+.hidden { display: none !important; }
+.hidden-view { display: none !important; }

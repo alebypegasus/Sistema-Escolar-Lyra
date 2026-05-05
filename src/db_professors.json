@@ -1,0 +1,1086 @@
+[
+  {
+    "id": "p1",
+    "name": "Dr. Arthur Menezes",
+    "role": "Professor Titular",
+    "subject": "UI/UX Design Systems",
+    "courses": [
+      "1003",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1979-10-24",
+    "rg": "74.254.013-0",
+    "cpf": "690.405.143-88",
+    "phone": "(11) 95696-3235",
+    "address": "Rua Voluntários da Pátria, 1402, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p1",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p2",
+    "name": "Dr. Heitor Ferreira Rodrigues",
+    "role": "Professor Titular",
+    "subject": "Arquitetura de Dados",
+    "courses": [
+      "1001",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1967-11-23",
+    "rg": "36.840.011-5",
+    "cpf": "721.894.687-98",
+    "phone": "(11) 95215-6142",
+    "address": "Av. Paulista, 1202, Fortaleza - CE",
+    "photo": "https://i.pravatar.cc/150?u=p2",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p3",
+    "name": "Profa. Manuela Martins Souza",
+    "role": "Professor Titular",
+    "subject": "Microserviços & Cloud",
+    "courses": [
+      "1004",
+      "1002",
+      "1001"
+    ],
+    "password": "123",
+    "dob": "1966-01-16",
+    "rg": "27.875.977-0",
+    "cpf": "495.913.261-44",
+    "phone": "(11) 97394-8311",
+    "address": "Av. Afonso Pena, 502, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p3",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p4",
+    "name": "Dra. Sophia Barbosa Alves",
+    "role": "Professor Titular",
+    "subject": "Inteligência Artificial",
+    "courses": [
+      "1002",
+      "1001",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1972-06-16",
+    "rg": "92.031.058-0",
+    "cpf": "982.636.990-81",
+    "phone": "(11) 96808-9251",
+    "address": "Rua da Consolação, 1979, Porto Alegre - RS",
+    "photo": "https://i.pravatar.cc/150?u=p4",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p5",
+    "name": "Profa. Isabella Carvalho Almeida",
+    "role": "Professor Titular",
+    "subject": "Cálculo Numérico",
+    "courses": [
+      "1001",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1962-01-13",
+    "rg": "77.819.180-8",
+    "cpf": "730.417.810-62",
+    "phone": "(11) 94801-9728",
+    "address": "Av. Brasil, 1973, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p5",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p6",
+    "name": "Prof. Joaquim Ferreira Martins",
+    "role": "Professor Titular",
+    "subject": "Física Moderna",
+    "courses": [
+      "1004",
+      "1002",
+      "1005"
+    ],
+    "password": "123",
+    "dob": "1964-09-08",
+    "rg": "48.389.170-4",
+    "cpf": "361.641.082-54",
+    "phone": "(11) 90586-3886",
+    "address": "Rua Augusta, 983, Rio de Janeiro - RJ",
+    "photo": "https://i.pravatar.cc/150?u=p6",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p7",
+    "name": "Profa. Maitê Vieira Mendes",
+    "role": "Professor Titular",
+    "subject": "Engenharia de Software",
+    "courses": [
+      "1005"
+    ],
+    "password": "123",
+    "dob": "1967-03-03",
+    "rg": "37.504.715-0",
+    "cpf": "575.116.398-94",
+    "phone": "(11) 91013-8077",
+    "address": "Rua XV de Novembro, 582, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p7",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p8",
+    "name": "Profa. Beatriz Soares Silva",
+    "role": "Professor Titular",
+    "subject": "Sistemas Operacionais",
+    "courses": [
+      "1003",
+      "1005",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1980-07-14",
+    "rg": "40.300.389-3",
+    "cpf": "486.955.058-28",
+    "phone": "(11) 92763-3814",
+    "address": "Rua XV de Novembro, 1315, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p8",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p9",
+    "name": "Prof. Arthur Ribeiro Santos",
+    "role": "Professor Titular",
+    "subject": "Gestão de Projetos",
+    "courses": [
+      "1003",
+      "1001",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1977-02-20",
+    "rg": "53.037.713-0",
+    "cpf": "522.284.309-72",
+    "phone": "(11) 96398-6144",
+    "address": "Av. Brasil, 106, Rio de Janeiro - RJ",
+    "photo": "https://i.pravatar.cc/150?u=p9",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p10",
+    "name": "Profa. Alice Costa Silva",
+    "role": "Professor Titular",
+    "subject": "Segurança da Informação",
+    "courses": [
+      "1004",
+      "1001",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1975-11-10",
+    "rg": "52.882.688-1",
+    "cpf": "528.474.804-50",
+    "phone": "(11) 94394-8670",
+    "address": "Rua Augusta, 594, Curitiba - PR",
+    "photo": "https://i.pravatar.cc/150?u=p10",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p11",
+    "name": "Dr. João Martins Santos",
+    "role": "Professor Titular",
+    "subject": "UI/UX Design Systems",
+    "courses": [
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1973-05-19",
+    "rg": "65.051.108-0",
+    "cpf": "979.873.606-23",
+    "phone": "(11) 94694-9285",
+    "address": "Rua do Ouvidor, 1914, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p11",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p12",
+    "name": "Profa. Luísa Soares Vieira",
+    "role": "Professor Titular",
+    "subject": "Arquitetura de Dados",
+    "courses": [
+      "1003",
+      "1002",
+      "1001"
+    ],
+    "password": "123",
+    "dob": "1961-05-15",
+    "rg": "24.108.531-4",
+    "cpf": "396.606.134-53",
+    "phone": "(11) 99724-6556",
+    "address": "Rua Augusta, 811, Fortaleza - CE",
+    "photo": "https://i.pravatar.cc/150?u=p12",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p13",
+    "name": "Prof. Gael Dias Nunes",
+    "role": "Professor Titular",
+    "subject": "Microserviços & Cloud",
+    "courses": [
+      "1004",
+      "1003",
+      "1005"
+    ],
+    "password": "123",
+    "dob": "1978-11-19",
+    "rg": "25.910.253-8",
+    "cpf": "343.473.018-68",
+    "phone": "(11) 97651-4667",
+    "address": "Rua XV de Novembro, 672, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p13",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p14",
+    "name": "Dra. Alice Oliveira Rocha",
+    "role": "Professor Titular",
+    "subject": "Inteligência Artificial",
+    "courses": [
+      "1005",
+      "1001",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1969-04-12",
+    "rg": "40.772.111-3",
+    "cpf": "511.579.445-64",
+    "phone": "(11) 94777-7629",
+    "address": "Rua Voluntários da Pátria, 127, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p14",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p15",
+    "name": "Dra. Sophia Ribeiro Soares",
+    "role": "Professor Titular",
+    "subject": "Cálculo Numérico",
+    "courses": [
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1968-06-23",
+    "rg": "55.036.233-1",
+    "cpf": "876.874.224-34",
+    "phone": "(11) 90900-4731",
+    "address": "Av. Brasil, 1201, Salvador - BA",
+    "photo": "https://i.pravatar.cc/150?u=p15",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p16",
+    "name": "Profa. Isabella Fernandes Costa",
+    "role": "Professor Titular",
+    "subject": "Física Moderna",
+    "courses": [
+      "1005",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1983-08-06",
+    "rg": "21.803.703-3",
+    "cpf": "287.557.145-03",
+    "phone": "(11) 90770-6022",
+    "address": "Rua da Consolação, 1116, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p16",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p17",
+    "name": "Profa. Helena Menezes Soares",
+    "role": "Professor Titular",
+    "subject": "Engenharia de Software",
+    "courses": [
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1983-09-24",
+    "rg": "19.914.268-1",
+    "cpf": "866.829.712-03",
+    "phone": "(11) 94003-2020",
+    "address": "Rua do Ouvidor, 918, Curitiba - PR",
+    "photo": "https://i.pravatar.cc/150?u=p17",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p18",
+    "name": "Profa. Beatriz Fernandes Mendes",
+    "role": "Professor Titular",
+    "subject": "Sistemas Operacionais",
+    "courses": [
+      "1004",
+      "1001"
+    ],
+    "password": "123",
+    "dob": "1985-01-20",
+    "rg": "57.912.581-0",
+    "cpf": "631.244.348-04",
+    "phone": "(11) 95574-0417",
+    "address": "Rua das Flores, 240, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p18",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p19",
+    "name": "Dr. Bernardo Lopes Santos",
+    "role": "Professor Titular",
+    "subject": "Gestão de Projetos",
+    "courses": [
+      "1002",
+      "1001",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1975-06-11",
+    "rg": "45.780.977-2",
+    "cpf": "467.668.402-61",
+    "phone": "(11) 98113-8357",
+    "address": "Av. Paulista, 106, Fortaleza - CE",
+    "photo": "https://i.pravatar.cc/150?u=p19",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p20",
+    "name": "Profa. Beatriz Souza Gomes",
+    "role": "Professor Titular",
+    "subject": "Segurança da Informação",
+    "courses": [
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1981-11-15",
+    "rg": "47.862.821-2",
+    "cpf": "753.509.089-29",
+    "phone": "(11) 94264-9441",
+    "address": "Rua do Ouvidor, 131, Curitiba - PR",
+    "photo": "https://i.pravatar.cc/150?u=p20",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p21",
+    "name": "Profa. Manuela Martins Fernandes",
+    "role": "Professor Titular",
+    "subject": "UI/UX Design Systems",
+    "courses": [
+      "1002",
+      "1001",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1963-06-06",
+    "rg": "32.170.607-6",
+    "cpf": "884.271.778-90",
+    "phone": "(11) 99144-6635",
+    "address": "Rua do Ouvidor, 1887, Curitiba - PR",
+    "photo": "https://i.pravatar.cc/150?u=p21",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p22",
+    "name": "Prof. Noah Fernandes Ribeiro",
+    "role": "Professor Titular",
+    "subject": "Arquitetura de Dados",
+    "courses": [
+      "1002",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1966-01-08",
+    "rg": "32.757.545-4",
+    "cpf": "206.304.865-79",
+    "phone": "(11) 91752-0260",
+    "address": "Av. Brasil, 264, Porto Alegre - RS",
+    "photo": "https://i.pravatar.cc/150?u=p22",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p23",
+    "name": "Prof. Rafael Menezes Ribeiro",
+    "role": "Professor Titular",
+    "subject": "Microserviços & Cloud",
+    "courses": [
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1978-07-04",
+    "rg": "54.095.306-1",
+    "cpf": "758.395.529-90",
+    "phone": "(11) 99372-3209",
+    "address": "Av. Cristiano Machado, 407, Salvador - BA",
+    "photo": "https://i.pravatar.cc/150?u=p23",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p24",
+    "name": "Prof. Benjamin Rocha Menezes",
+    "role": "Professor Titular",
+    "subject": "Inteligência Artificial",
+    "courses": [
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1977-03-12",
+    "rg": "64.019.446-3",
+    "cpf": "340.360.724-19",
+    "phone": "(11) 93608-7305",
+    "address": "Av. Afonso Pena, 1320, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p24",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p25",
+    "name": "Dr. Theo Gomes Carvalho",
+    "role": "Professor Titular",
+    "subject": "Cálculo Numérico",
+    "courses": [
+      "1004",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1966-06-18",
+    "rg": "90.113.609-7",
+    "cpf": "858.459.769-01",
+    "phone": "(11) 91449-2523",
+    "address": "Av. Brasil, 1909, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p25",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p26",
+    "name": "Prof. Joaquim Costa Ferreira",
+    "role": "Professor Titular",
+    "subject": "Física Moderna",
+    "courses": [
+      "1004",
+      "1002",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1965-04-25",
+    "rg": "82.937.748-6",
+    "cpf": "875.427.872-34",
+    "phone": "(11) 99672-8587",
+    "address": "Av. Brasil, 958, Rio de Janeiro - RJ",
+    "photo": "https://i.pravatar.cc/150?u=p26",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p27",
+    "name": "Profa. Luísa Gomes Pereira",
+    "role": "Professor Titular",
+    "subject": "Engenharia de Software",
+    "courses": [
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1987-08-26",
+    "rg": "54.323.926-2",
+    "cpf": "473.953.550-85",
+    "phone": "(11) 92005-8757",
+    "address": "Rua XV de Novembro, 668, Rio de Janeiro - RJ",
+    "photo": "https://i.pravatar.cc/150?u=p27",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p28",
+    "name": "Profa. Clara Nunes Souza",
+    "role": "Professor Titular",
+    "subject": "Sistemas Operacionais",
+    "courses": [
+      "1001",
+      "1005",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1980-06-05",
+    "rg": "03.435.080-5",
+    "cpf": "368.285.112-32",
+    "phone": "(11) 92805-5769",
+    "address": "Rua Voluntários da Pátria, 1903, Rio de Janeiro - RJ",
+    "photo": "https://i.pravatar.cc/150?u=p28",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p29",
+    "name": "Dr. Heitor Lima Fernandes",
+    "role": "Professor Titular",
+    "subject": "Gestão de Projetos",
+    "courses": [
+      "1005",
+      "1001"
+    ],
+    "password": "123",
+    "dob": "1977-11-15",
+    "rg": "63.138.080-6",
+    "cpf": "696.556.270-06",
+    "phone": "(11) 95576-3108",
+    "address": "Rua Augusta, 600, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p29",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p30",
+    "name": "Profa. Beatriz Menezes Lopes",
+    "role": "Professor Titular",
+    "subject": "Segurança da Informação",
+    "courses": [
+      "1003",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1962-02-21",
+    "rg": "02.527.903-0",
+    "cpf": "135.163.414-27",
+    "phone": "(11) 94306-7144",
+    "address": "Av. Afonso Pena, 1660, Curitiba - PR",
+    "photo": "https://i.pravatar.cc/150?u=p30",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p31",
+    "name": "Prof. Miguel Melo Rodrigues",
+    "role": "Professor Titular",
+    "subject": "UI/UX Design Systems",
+    "courses": [
+      "1004",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1970-01-26",
+    "rg": "59.167.913-3",
+    "cpf": "402.661.291-68",
+    "phone": "(11) 97111-4386",
+    "address": "Rua XV de Novembro, 820, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p31",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p32",
+    "name": "Dra. Maria Alice Nunes Rodrigues",
+    "role": "Professor Titular",
+    "subject": "Arquitetura de Dados",
+    "courses": [
+      "1004",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1989-09-03",
+    "rg": "88.962.261-1",
+    "cpf": "929.255.036-90",
+    "phone": "(11) 98091-5612",
+    "address": "Rua Voluntários da Pátria, 1026, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p32",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p33",
+    "name": "Profa. Maitê Silva Alves",
+    "role": "Professor Titular",
+    "subject": "Microserviços & Cloud",
+    "courses": [
+      "1005",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1970-03-24",
+    "rg": "32.142.222-2",
+    "cpf": "106.041.964-48",
+    "phone": "(11) 93759-0726",
+    "address": "Rua XV de Novembro, 1568, Fortaleza - CE",
+    "photo": "https://i.pravatar.cc/150?u=p33",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p34",
+    "name": "Profa. Letícia Melo Soares",
+    "role": "Professor Titular",
+    "subject": "Inteligência Artificial",
+    "courses": [
+      "1005"
+    ],
+    "password": "123",
+    "dob": "1984-08-03",
+    "rg": "83.281.553-8",
+    "cpf": "878.594.050-56",
+    "phone": "(11) 97960-4745",
+    "address": "Rua Voluntários da Pátria, 224, Salvador - BA",
+    "photo": "https://i.pravatar.cc/150?u=p34",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p35",
+    "name": "Prof. Lorenzo Oliveira Lopes",
+    "role": "Professor Titular",
+    "subject": "Cálculo Numérico",
+    "courses": [
+      "1004",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1981-06-05",
+    "rg": "07.117.728-8",
+    "cpf": "149.824.576-85",
+    "phone": "(11) 96599-1411",
+    "address": "Rua Augusta, 1591, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p35",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p36",
+    "name": "Dra. Letícia Martins Almeida",
+    "role": "Professor Titular",
+    "subject": "Física Moderna",
+    "courses": [
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1981-08-10",
+    "rg": "62.122.370-1",
+    "cpf": "195.677.103-45",
+    "phone": "(11) 91420-7922",
+    "address": "Av. Afonso Pena, 1517, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p36",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p37",
+    "name": "Profa. Isadora Rocha Vieira",
+    "role": "Professor Titular",
+    "subject": "Engenharia de Software",
+    "courses": [
+      "1001",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1987-03-19",
+    "rg": "67.768.008-4",
+    "cpf": "850.565.161-46",
+    "phone": "(11) 96646-3703",
+    "address": "Av. Afonso Pena, 1944, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p37",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p38",
+    "name": "Dra. Liz Vieira Souza",
+    "role": "Professor Titular",
+    "subject": "Sistemas Operacionais",
+    "courses": [
+      "1001"
+    ],
+    "password": "123",
+    "dob": "1964-01-05",
+    "rg": "40.529.830-0",
+    "cpf": "908.080.865-00",
+    "phone": "(11) 95282-3721",
+    "address": "Av. Cristiano Machado, 838, Porto Alegre - RS",
+    "photo": "https://i.pravatar.cc/150?u=p38",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p39",
+    "name": "Dra. Heloísa Almeida Carvalho",
+    "role": "Professor Titular",
+    "subject": "Gestão de Projetos",
+    "courses": [
+      "1001"
+    ],
+    "password": "123",
+    "dob": "1975-05-11",
+    "rg": "87.367.982-7",
+    "cpf": "762.377.756-33",
+    "phone": "(11) 95877-0543",
+    "address": "Av. Brasil, 541, Salvador - BA",
+    "photo": "https://i.pravatar.cc/150?u=p39",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p40",
+    "name": "Dr. Lucca Mendes Fernandes",
+    "role": "Professor Titular",
+    "subject": "Segurança da Informação",
+    "courses": [
+      "1001",
+      "1002",
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1979-11-21",
+    "rg": "78.403.275-5",
+    "cpf": "600.179.087-67",
+    "phone": "(11) 95512-4138",
+    "address": "Rua Voluntários da Pátria, 1567, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p40",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p41",
+    "name": "Dra. Júlia Nunes Lopes",
+    "role": "Professor Titular",
+    "subject": "UI/UX Design Systems",
+    "courses": [
+      "1001",
+      "1003",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1965-11-27",
+    "rg": "07.071.889-2",
+    "cpf": "526.986.233-88",
+    "phone": "(11) 92630-9536",
+    "address": "Av. Afonso Pena, 1873, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p41",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p42",
+    "name": "Profa. Laura Costa Silva",
+    "role": "Professor Titular",
+    "subject": "Arquitetura de Dados",
+    "courses": [
+      "1005",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1979-07-22",
+    "rg": "42.425.297-2",
+    "cpf": "631.095.323-81",
+    "phone": "(11) 94863-9585",
+    "address": "Rua das Flores, 885, Porto Alegre - RS",
+    "photo": "https://i.pravatar.cc/150?u=p42",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p43",
+    "name": "Dr. Theo Almeida Carvalho",
+    "role": "Professor Titular",
+    "subject": "Microserviços & Cloud",
+    "courses": [
+      "1005",
+      "1002",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1973-09-24",
+    "rg": "23.638.820-7",
+    "cpf": "004.320.315-88",
+    "phone": "(11) 98889-0831",
+    "address": "Rua da Consolação, 510, Curitiba - PR",
+    "photo": "https://i.pravatar.cc/150?u=p43",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p44",
+    "name": "Dra. Laura Lima Ferreira",
+    "role": "Professor Titular",
+    "subject": "Inteligência Artificial",
+    "courses": [
+      "1003",
+      "1001",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1986-11-19",
+    "rg": "52.291.987-8",
+    "cpf": "775.482.019-92",
+    "phone": "(11) 95401-2563",
+    "address": "Av. Brasil, 760, Porto Alegre - RS",
+    "photo": "https://i.pravatar.cc/150?u=p44",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p45",
+    "name": "Dr. Miguel Gomes Silva",
+    "role": "Professor Titular",
+    "subject": "Cálculo Numérico",
+    "courses": [
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1961-01-22",
+    "rg": "36.737.754-3",
+    "cpf": "023.631.075-64",
+    "phone": "(11) 92795-7735",
+    "address": "Av. Paulista, 1161, Rio de Janeiro - RJ",
+    "photo": "https://i.pravatar.cc/150?u=p45",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p46",
+    "name": "Prof. Lorenzo Gomes Carvalho",
+    "role": "Professor Titular",
+    "subject": "Física Moderna",
+    "courses": [
+      "1004",
+      "1005"
+    ],
+    "password": "123",
+    "dob": "1988-12-23",
+    "rg": "91.883.654-6",
+    "cpf": "842.644.136-28",
+    "phone": "(11) 97443-1220",
+    "address": "Av. Afonso Pena, 881, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p46",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p47",
+    "name": "Dr. Samuel Rodrigues Silva",
+    "role": "Professor Titular",
+    "subject": "Engenharia de Software",
+    "courses": [
+      "1001",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1982-05-13",
+    "rg": "78.672.349-6",
+    "cpf": "216.980.954-68",
+    "phone": "(11) 93731-7505",
+    "address": "Rua XV de Novembro, 585, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p47",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p48",
+    "name": "Profa. Isadora Lopes Santos",
+    "role": "Professor Titular",
+    "subject": "Sistemas Operacionais",
+    "courses": [
+      "1001"
+    ],
+    "password": "123",
+    "dob": "1981-01-12",
+    "rg": "86.917.839-8",
+    "cpf": "413.271.180-09",
+    "phone": "(11) 90478-1539",
+    "address": "Av. Afonso Pena, 43, Rio de Janeiro - RJ",
+    "photo": "https://i.pravatar.cc/150?u=p48",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p49",
+    "name": "Dr. Heitor Alves Lima",
+    "role": "Professor Titular",
+    "subject": "Gestão de Projetos",
+    "courses": [
+      "1002",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1976-12-11",
+    "rg": "27.756.642-7",
+    "cpf": "773.090.837-28",
+    "phone": "(11) 93728-8756",
+    "address": "Av. Cristiano Machado, 1323, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p49",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p50",
+    "name": "Dra. Lívia Pereira Alves",
+    "role": "Professor Titular",
+    "subject": "Segurança da Informação",
+    "courses": [
+      "1004",
+      "1003",
+      "1005"
+    ],
+    "password": "123",
+    "dob": "1963-07-26",
+    "rg": "10.931.689-3",
+    "cpf": "900.663.533-46",
+    "phone": "(11) 95779-8027",
+    "address": "Rua das Flores, 80, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p50",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p51",
+    "name": "Dra. Eloá Pereira Fernandes",
+    "role": "Professor Titular",
+    "subject": "UI/UX Design Systems",
+    "courses": [
+      "1005",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1987-09-01",
+    "rg": "33.281.854-2",
+    "cpf": "862.822.347-54",
+    "phone": "(11) 92587-8756",
+    "address": "Av. Brasil, 1780, Porto Alegre - RS",
+    "photo": "https://i.pravatar.cc/150?u=p51",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p52",
+    "name": "Dr. Pedro Carvalho Ribeiro",
+    "role": "Professor Titular",
+    "subject": "Arquitetura de Dados",
+    "courses": [
+      "1005",
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1961-02-16",
+    "rg": "28.276.164-6",
+    "cpf": "867.147.029-48",
+    "phone": "(11) 92898-6083",
+    "address": "Rua Voluntários da Pátria, 857, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p52",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p53",
+    "name": "Prof. Bernardo Vieira Almeida",
+    "role": "Professor Titular",
+    "subject": "Microserviços & Cloud",
+    "courses": [
+      "1001",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1963-08-18",
+    "rg": "89.536.848-1",
+    "cpf": "100.190.258-64",
+    "phone": "(11) 90770-6446",
+    "address": "Rua XV de Novembro, 184, Rio de Janeiro - RJ",
+    "photo": "https://i.pravatar.cc/150?u=p53",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p54",
+    "name": "Dr. Lucca Fernandes Costa",
+    "role": "Professor Titular",
+    "subject": "Inteligência Artificial",
+    "courses": [
+      "1005"
+    ],
+    "password": "123",
+    "dob": "1975-03-20",
+    "rg": "74.799.564-2",
+    "cpf": "017.738.686-78",
+    "phone": "(11) 96111-2886",
+    "address": "Av. Cristiano Machado, 1484, Fortaleza - CE",
+    "photo": "https://i.pravatar.cc/150?u=p54",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p55",
+    "name": "Prof. João Costa Rodrigues",
+    "role": "Professor Titular",
+    "subject": "Cálculo Numérico",
+    "courses": [
+      "1004"
+    ],
+    "password": "123",
+    "dob": "1970-02-07",
+    "rg": "00.859.261-3",
+    "cpf": "695.134.868-11",
+    "phone": "(11) 92325-3767",
+    "address": "Rua XV de Novembro, 1508, Belo Horizonte - MG",
+    "photo": "https://i.pravatar.cc/150?u=p55",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p56",
+    "name": "Dra. Alice Gomes Pereira",
+    "role": "Professor Titular",
+    "subject": "Física Moderna",
+    "courses": [
+      "1003",
+      "1004",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1970-12-12",
+    "rg": "03.709.032-2",
+    "cpf": "102.547.801-22",
+    "phone": "(11) 95241-1494",
+    "address": "Av. Afonso Pena, 1535, São Paulo - SP",
+    "photo": "https://i.pravatar.cc/150?u=p56",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p57",
+    "name": "Prof. Matheus Alves Pereira",
+    "role": "Professor Titular",
+    "subject": "Engenharia de Software",
+    "courses": [
+      "1003"
+    ],
+    "password": "123",
+    "dob": "1980-08-27",
+    "rg": "83.195.282-4",
+    "cpf": "815.646.656-50",
+    "phone": "(11) 97695-2929",
+    "address": "Av. Brasil, 597, Curitiba - PR",
+    "photo": "https://i.pravatar.cc/150?u=p57",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p58",
+    "name": "Dr. Davi Oliveira Nunes",
+    "role": "Professor Titular",
+    "subject": "Sistemas Operacionais",
+    "courses": [
+      "1004",
+      "1001",
+      "1002"
+    ],
+    "password": "123",
+    "dob": "1971-03-22",
+    "rg": "10.047.521-3",
+    "cpf": "583.961.580-10",
+    "phone": "(11) 90708-9351",
+    "address": "Rua da Consolação, 1357, Brasília - DF",
+    "photo": "https://i.pravatar.cc/150?u=p58",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p59",
+    "name": "Dra. Eloá Silva Vieira",
+    "role": "Professor Titular",
+    "subject": "Gestão de Projetos",
+    "courses": [
+      "1003",
+      "1005"
+    ],
+    "password": "123",
+    "dob": "1967-08-10",
+    "rg": "01.815.800-4",
+    "cpf": "051.850.893-76",
+    "phone": "(11) 94070-3171",
+    "address": "Av. Paulista, 1605, Salvador - BA",
+    "photo": "https://i.pravatar.cc/150?u=p59",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  },
+  {
+    "id": "p60",
+    "name": "Prof. Benício Pereira Soares",
+    "role": "Professor Titular",
+    "subject": "Segurança da Informação",
+    "courses": [
+      "1002",
+      "1004",
+      "1001"
+    ],
+    "password": "123",
+    "dob": "1965-01-22",
+    "rg": "13.120.076-0",
+    "cpf": "505.479.510-83",
+    "phone": "(11) 98299-0063",
+    "address": "Rua Augusta, 1671, Curitiba - PR",
+    "photo": "https://i.pravatar.cc/150?u=p60",
+    "additionalInfo": "Doutorado concluído há mais de 10 anos. Pesquisador ativo."
+  }
+]
