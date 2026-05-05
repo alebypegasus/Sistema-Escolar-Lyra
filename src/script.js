@@ -251,6 +251,10 @@ function performLogout() {
   // Esconde o APP
   document.getElementById('app-screen').classList.add('hidden');
   
+  // Esconde botões flutuantes caso existam
+  const fab = document.getElementById('fab-container');
+  if (fab) fab.style.display = 'none';
+  
   // Re-mostra o Login
   document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('login-screen').style.opacity = '1';

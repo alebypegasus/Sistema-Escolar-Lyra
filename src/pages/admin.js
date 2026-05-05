@@ -350,44 +350,8 @@ function renderTabContent(tab, State) {
                     <div class="relative">
                       <input type="file" id="logo-file" class="input-field p-8" accept="image/*" style="padding-top: 10px; cursor: pointer;">
                     </div>
-                 </div>
-                 
-                 <div class="my-8 flex-align-center gap-16 w-full">
-                    <hr class="flex-1 opacity-20">
-                    <span class="text-xs text-secondary fw-bold">CORES AVANÇADAS</span>
-                    <hr class="flex-1 opacity-20">
-                 </div>
-
-                 <div class="grid-2-cols gap-16">
-                   <div class="input-group">
-                      <label class="text-sm fw-bold">Cor Principal (Botões)</label>
-                      <input type="color" id="brand-color" class="input-field" style="width: 100%; height: 42px; padding: 4px; cursor: pointer;" value="${State.getCustomColor()}">
-                   </div>
-                   <div class="input-group">
-                      <label class="text-sm fw-bold">Fundo (Fundo da Página)</label>
-                      <input type="color" id="bg-body-color" class="input-field" style="width: 100%; height: 42px; padding: 4px; cursor: pointer;" value="${State.getThemeConfig().bgBody || '#f4f4f5'}">
-                   </div>
-                   <div class="input-group">
-                      <label class="text-sm fw-bold">Fundo de Cards</label>
-                      <input type="color" id="bg-surface-color" class="input-field" style="width: 100%; height: 42px; padding: 4px; cursor: pointer;" value="${State.getThemeConfig().bgSurface || '#ffffff'}">
-                   </div>
-                   <div class="input-group">
-                      <label class="text-sm fw-bold">Painéis Secundários</label>
-                      <input type="color" id="bg-panel-color" class="input-field" style="width: 100%; height: 42px; padding: 4px; cursor: pointer;" value="${State.getThemeConfig().bgPanel || '#fafafa'}">
-                   </div>
-                   <div class="input-group">
-                      <label class="text-sm fw-bold">Texto Principal</label>
-                      <input type="color" id="text-primary-color" class="input-field" style="width: 100%; height: 42px; padding: 4px; cursor: pointer;" value="${State.getThemeConfig().textPrimary || '#18181b'}">
-                   </div>
-                   <div class="input-group">
-                      <label class="text-sm fw-bold">Texto Secundário</label>
-                      <input type="color" id="text-secondary-color" class="input-field" style="width: 100%; height: 42px; padding: 4px; cursor: pointer;" value="${State.getThemeConfig().textSecondary || '#71717a'}">
-                   </div>
-                 </div>
-                 
                  <div class="flex-row gap-8 mt-12">
-                   <button class="btn-primary flex-1" id="btn-save-branding">Salvar Cores/Logo</button>
-                   <button class="btn-outline btn-outline-neutral" id="btn-reset-color" style="height: 42px;">Restaurar Tudo</button>
+                   <button class="btn-primary flex-1" id="btn-save-branding">Salvar Alterações</button>
                  </div>
               </div>
 
@@ -747,15 +711,6 @@ export function setupAdminInteractions(State, onNavigate) {
         pendingLogoBase64 = null;
       }
       
-      const themeConfig = {
-         bgBody: document.getElementById('bg-body-color')?.value,
-         bgSurface: document.getElementById('bg-surface-color')?.value,
-         bgPanel: document.getElementById('bg-panel-color')?.value,
-         textPrimary: document.getElementById('text-primary-color')?.value,
-         textSecondary: document.getElementById('text-secondary-color')?.value,
-      };
-      State.setThemeConfig(themeConfig);
-      
       const schn = document.getElementById('school-name');
       if (schn) {
         State.setSchoolInfo({
@@ -765,14 +720,6 @@ export function setupAdminInteractions(State, onNavigate) {
           phone: document.getElementById('school-phone').value,
         });
       }
-
-      const color = document.getElementById('brand-color')?.value;
-      if (color) {
-        State.setCustomColor(color);
-      }
-      
-      const { applyBrandColor } = await import('../script.js');
-      applyBrandColor();
       
       const origText = btnSaveBranding.innerText;
       btnSaveBranding.innerText = 'Alterações Salvas!';
@@ -782,52 +729,6 @@ export function setupAdminInteractions(State, onNavigate) {
         btnSaveBranding.style.backgroundColor = '';
       }, 2000);
     };
-  }
-  
-  const btnResetColor = document.getElementById('btn-reset-color');
-  if (btnResetColor) {
-    btnResetColor.onclick = async () => {
-      const defaultColor = '#3b82f6';
-      if (document.getElementById('brand-color')) document.getElementById('brand-color').value = defaultColor;
-      if (document.getElementById('bg-body-color')) document.getElementById('bg-body-color').value = '#f4f4f5';
-      if (document.getElementById('bg-surface-color')) document.getElementById('bg-surface-color').value = '#ffffff';
-      if (document.getElementById('bg-panel-color')) document.getElementById('bg-panel-color').value = '#fafafa';
-      if (document.getElementById('text-primary-color')) document.getElementById('text-primary-color').value = '#18181b';
-      if (document.getElementById('text-secondary-color')) document.getElementById('text-secondary-color').value = '#71717a';
-
-      State.setCustomColor(defaultColor);
-      State.setThemeConfig({});
-      const { applyBrandColor } = await import('../script.js');
-      applyBrandColor();
-    }
-  }
-
-  // --- Função Avançada Cativante: Obter Cor Dominante da Imagem ---
-  function getAvgColorOfImage(imgElement) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = imgElement.width || imgElement.naturalWidth || 50;
-    canvas.height = imgElement.height || imgElement.naturalHeight || 50;
-    
-    if (canvas.width === 0) return null;
-    ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-    try {
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-      let r = 0, g = 0, b = 0, count = 0;
-      for (let i = 0; i < imgData.length; i += 16) {
-        if (imgData[i+3] > 0) { // Ignorar pixels transparentes
-          r += imgData[i]; g += imgData[i+1]; b += imgData[i+2];
-          count++;
-        }
-      }
-      if (count > 0) {
-        r = Math.floor(r / count);
-        g = Math.floor(g / count);
-        b = Math.floor(b / count);
-        return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
-      }
-    } catch(e) { console.error("Canvas CORS ou Erro na imagem:", e); }
-    return null;
   }
   
   let pendingLogoBase64 = null;
@@ -857,25 +758,6 @@ export function setupAdminInteractions(State, onNavigate) {
         const preview = document.getElementById('branding-preview-logo');
         if (preview) {
            preview.src = ev.target.result;
-           
-           // Extrair cor automaticamente ao subir logo logo
-           const tempImg = new Image();
-           tempImg.onload = () => {
-             const domColor = getAvgColorOfImage(tempImg);
-             if (domColor) {
-                const brandInput = document.getElementById('brand-color');
-                if (brandInput) {
-                  brandInput.value = domColor;
-                  // Feedback visual para o usuário
-                  const origT = logoFile.previousElementSibling?.innerText;
-                  if (logoFile.previousElementSibling) {
-                    logoFile.previousElementSibling.innerText = "Cor identificada e aplicada ✨";
-                    setTimeout(() => logoFile.previousElementSibling.innerText = origT, 3000);
-                  }
-                }
-             }
-           };
-           tempImg.src = ev.target.result;
         }
       };
       if (e.target.files[0]) {
