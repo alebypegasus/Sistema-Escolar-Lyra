@@ -161,256 +161,144 @@ export const State = {
     }
   },
 
-  registerProfessor(profData) {
+  registerProfessor(data) {
     const profs = this.db.professors;
-    // Simple ID generation if not provided
-    if (!profData.id) {
-      profData.id = 'p' + (profs.length + 1);
-    }
+    const isEdit = !!data.id_orig;
     
-    // Check if ID already exists
-    if (profs.find(p => p.id === profData.id)) {
-      return { success: false, message: 'ID já existente.' };
+    if (isEdit) {
+      const idx = profs.findIndex(p => p.id === data.id_orig);
+      if (idx > -1) {
+        profs[idx] = { 
+          ...profs[idx], 
+          name: data.name,
+          password: data.password || profs[idx].password,
+          subject: data.subject
+        };
+        this.db.saveProfessors(profs);
+        return { success: true, message: 'Professor atualizado!' };
+      }
     }
 
+    const id = data.id || `p${Date.now()}`;
+    if (profs.find(p => p.id === id)) return { success: false, message: 'ID já em uso.' };
+
     profs.push({
-      id: profData.id,
-      name: profData.name || 'Novo Professor',
-      role: profData.role || 'Professor Titular',
-      subject: profData.subject || 'Indefinida',
-      courses: profData.courses || [],
-      password: profData.password || '123',
-      dob: profData.dob || '',
-      rg: profData.rg || '',
-      cpf: profData.cpf || '',
-      phone: profData.phone || '',
-      address: profData.address || '',
-      photo: profData.photo || `https://i.pravatar.cc/150?u=${profData.id}`,
-      additionalInfo: profData.additionalInfo || ''
+      id,
+      name: data.name,
+      password: data.password || "admin123",
+      subject: data.subject,
+      photo: `https://i.pravatar.cc/150?u=${id}`,
+      notifications: []
     });
 
     this.db.saveProfessors(profs);
-    return { success: true, message: 'Professor cadastrado com sucesso!' };
+    return { success: true, message: 'Professor cadastrado!' };
   },
 
   registerAdmin(adminData) {
     const admins = this.db.admins;
-    if (!adminData.id) {
-      adminData.id = 'adm' + (admins.length + 1);
-    }
+    const id = adminData.id || `adm${Date.now()}`;
     
-    if (admins.find(a => a.id === adminData.id) || adminData.id === 'admin') {
-      return { success: false, message: 'ID de admin já existente.' };
+    if (admins.find(a => a.id === id) || id === 'admin') {
+      return { success: false, message: 'ID de admin indisponível.' };
     }
 
     admins.push({
-      id: adminData.id,
-      name: adminData.name || 'Novo Admin',
+      id,
+      name: adminData.name,
       password: adminData.password || 'admin123',
       isAdmin: true,
-      photo: adminData.photo || `https://i.pravatar.cc/150?u=${adminData.id}`,
-      subject: 'Administração'
+      photo: `https://i.pravatar.cc/150?u=${id}`
     });
 
     this.db.saveAdmins(admins);
-    return { success: true, message: 'Usuário administrador cadastrado!' };
+    return { success: true, message: 'Administrador cadastrado!' };
   },
 
-  registerCourse(courseData) {
+  registerCourse(data) {
     const courses = this.db.courses;
-    if (!courseData.id) {
-      courseData.id = 'C' + (courses.length + 101);
-    }
-    
-    if (courses.find(c => c.id === courseData.id)) {
-      return { success: false, message: 'ID de módulo já existente.' };
+    const isEdit = !!data.id_orig;
+
+    if (isEdit) {
+      const idx = courses.findIndex(c => c.id === data.id_orig);
+      if (idx > -1) {
+        courses[idx].name = data.name;
+        this.db.saveCourses(courses);
+        return { success: true, message: 'Curso atualizado!' };
+      }
     }
 
-    courses.push({
-      id: courseData.id,
-      name: courseData.name || 'Novo Módulo'
+    const id = data.id || `c${Date.now()}`;
+    if (courses.find(c => c.id === id)) return { success: false, message: 'Cód já em uso.' };
+
+    courses.push({ id, name: data.name });
+    this.db.saveCourses(courses);
+    return { success: true, message: 'Curso cadastrado!' };
+  },
+
+  registerStudent(data) {
+    const students = this.db.students;
+    const isEdit = !!data.id_orig;
+
+    if (isEdit) {
+      const idx = students.findIndex(s => s.id === data.id_orig);
+      if (idx > -1) {
+        students[idx] = { 
+          ...students[idx], 
+          name: data.name,
+          courseName: data.courseName,
+          shift: data.shift || students[idx].shift,
+          password: data.password || students[idx].password
+        };
+        this.db.saveStudents(students);
+        return { success: true, message: 'Aluno atualizado!' };
+      }
+    }
+
+    const id = data.id || `s${Date.now()}`;
+    const registration = data.registration || `RA${Math.floor(Math.random() * 90000) + 10000}`;
+
+    students.push({
+      id,
+      name: data.name,
+      registration,
+      password: data.password || "123",
+      courseName: data.courseName,
+      shift: data.shift || "Manhã",
+      photo: `https://i.pravatar.cc/150?u=${id}`,
+      subjects: [{ name: data.courseName, professor: 'A definir', grade: 0, attendance: 100, attendanceRecords: [] }],
+      attendance: 100,
+      average: 0
     });
 
-    this.db.saveCourses(courses);
-    return { success: true, message: 'Módulo cadastrado com sucesso!' };
+    this.db.saveStudents(students);
+    return { success: true, message: 'Aluno matriculado!' };
   },
 
-  updateGrade(studentId, subjectName, newGrade) {
-    const allStudents = this.db.students;
-    const student = allStudents.find(s => s.id === studentId);
-    if (!student) return false;
-
-    const subject = student.subjects.find(sub => sub.name === subjectName);
-    if (subject) {
-      subject.grade = parseFloat(newGrade);
-      const total = student.subjects.reduce((acc, sub) => acc + sub.grade, 0);
-      student.average = parseFloat((total / student.subjects.length).toFixed(1));
-      this.db.saveStudents(allStudents);
-      this.refreshUser(); // Updates active user info if needed
-      return true;
-    }
-    return false;
-  },
-
-  /**
-   * Atualiza a presença de um aluno em tempo real.
-   */
-  togglePresence(studentId, subjectName, isPresent = undefined) {
-    const allStudents = this.db.students;
-    const student = allStudents.find(s => s.id === studentId);
-    if (!student) return false;
-
-    const subject = student.subjects.find(sub => sub.name === subjectName);
-    if (subject) {
-      const today = new Date().toISOString().split('T')[0];
-      if (!subject.attendanceRecords) subject.attendanceRecords = [];
-      const recordIndex = subject.attendanceRecords.findIndex(r => r.date === today);
-
-      let newStatus = isPresent;
-      if (isPresent === undefined) { 
-        newStatus = recordIndex > -1 ? !subject.attendanceRecords[recordIndex].present : false;
-      }
-      
-      if (recordIndex > -1) {
-        subject.attendanceRecords[recordIndex].present = newStatus;
-      } else {
-        subject.attendanceRecords.push({
-          id: Date.now().toString(),
-          date: today,
-          present: newStatus,
-          status: 'pending'
-        });
-      }
-
-      const absences = subject.attendanceRecords.filter(r => !r.present).length;
-      subject.attendance = Math.max(0, 100 - (absences * 5));
-
-      const attAvg = Math.floor(student.subjects.reduce((acc, sub) => acc + sub.attendance, 0) / student.subjects.length);
-      student.attendance = attAvg;
-      
-      this.db.saveStudents(allStudents);
-      this.refreshUser();
-      return true;
-    }
-    return false;
-  },
-
-  // --- MÉTODOS ADMINISTRATIVOS ---
-
-  /**
-   * Atualiza dados de um professor existente.
-   */
-  updateProfessor(id, data) {
-    const profs = this.db.professors;
-    const idx = profs.findIndex(p => p.id === id);
-    if (idx > -1) {
-      profs[idx] = { 
-        ...profs[idx], 
-        ...data,
-        id: profs[idx].id // Previne mudança acidental de ID
-      };
-      this.db.saveProfessors(profs);
-      return { success: true, message: 'Prontuário do docente atualizado!' };
-    }
-    return { success: false, message: 'Professor não encontrado.' };
-  },
-
-  /**
-   * Remove qualquer registro do sistema com confirmação de tipo.
-   */
   deleteEntity(id, type) {
     switch (type) {
       case 'professor':
-        const profs = this.db.professors.filter(p => p.id !== id);
-        this.db.saveProfessors(profs);
+        this.db.saveProfessors(this.db.professors.filter(p => p.id !== id));
         break;
       case 'student':
-        const studs = this.db.students.filter(s => s.id !== id);
-        this.db.saveStudents(studs);
+        this.db.saveStudents(this.db.students.filter(s => s.id !== id));
         break;
       case 'admin':
-        if (id === 'admin') return { success: false, message: 'O admin principal não pode ser removido.' };
-        const adms = this.db.admins.filter(a => a.id !== id);
-        this.db.saveAdmins(adms);
+        if (id === 'admin') return { success: false, message: 'Impossível remover master.' };
+        this.db.saveAdmins(this.db.admins.filter(a => a.id !== id));
         break;
       case 'course':
-        // Antes de remover curso, seria ideal avisar que alunos ficarão órfãos de curso
-        const courses = this.db.courses.filter(c => c.id !== id);
-        this.db.saveCourses(courses);
+        this.db.saveCourses(this.db.courses.filter(c => c.id !== id));
         break;
     }
-    return { success: true, message: `${type.charAt(0).toUpperCase() + type.slice(1)} removido com sucesso.` };
+    return { success: true, message: 'Excluído!' };
   },
 
-  /**
-   * Registra ou Atualiza um Estudante.
-   */
-  registerStudent(studentData) {
-    const students = this.db.students;
-    const isEdit = !!studentData.id_orig;
-    
-    const student = {
-      id: studentData.id || `s${Date.now()}`,
-      name: studentData.name,
-      registration: studentData.registration || `RA${Math.floor(Math.random() * 90000) + 10000}`,
-      password: studentData.password || "123",
-      photo: studentData.photo || `https://i.pravatar.cc/150?u=${studentData.name}`,
-      courseName: studentData.courseName || "Novo Aluno",
-      shift: studentData.shift || "Manhã",
-      courses: [], // IDs de matérias cursadas
-      subjects: [], // Objetos de notas/presenças
-      history: [],
-      attendance: 100,
-      average: 0,
-      notifications: []
-    };
-
-    if (isEdit) {
-      const idx = students.findIndex(s => s.id === studentData.id_orig);
-      if (idx > -1) {
-        // Mantém dados sensíveis de histórico se existirem
-        const existing = students[idx];
-        students[idx] = { 
-          ...existing, 
-          name: studentData.name,
-          courseName: studentData.courseName,
-          shift: studentData.shift || existing.shift,
-          password: studentData.password || existing.password,
-          registration: studentData.registration || existing.registration
-        };
-        this.db.saveStudents(students);
-        return { success: true, message: 'Cadastro do aluno atualizado!' };
-      }
-    }
-
-    if (students.find(s => s.id === student.id)) return { success: false, message: 'ID já em uso.' };
-    
-    // Inicialização básica de sujeitos baseada no curso
-    const course = this.db.courses.find(c => c.name === student.courseName);
-    if (course) {
-       // Se o curso exists, poderíamos vincular matérias aqui se houvesse uma estrutura mais complexa.
-       // Por enquanto, apenas inicializamos um array vazio ou com uma disciplina padrão.
-       student.subjects = [
-         { name: course.name, professor: "A definir", grade: 0, attendance: 100, attendanceRecords: [] }
-       ];
-    }
-    
-    students.push(student);
-    this.db.saveStudents(students);
-    return { success: true, message: 'Aluno matriculado com sucesso!' };
-  },
-
-  /**
-   * Atualiza um Cursos de forma genérica.
-   */
   updateCourse(id, data) {
-    const courses = this.db.courses;
-    const idx = courses.findIndex(c => c.id === id);
-    if (idx > -1) {
-      courses[idx] = { ...courses[idx], ...data };
-      this.db.saveCourses(courses);
-      return true;
-    }
-    return false;
+    return this.registerCourse({ ...data, id_orig: id });
+  },
+
+  updateProfessor(id, data) {
+    return this.registerProfessor({ ...data, id_orig: id });
   },
 };

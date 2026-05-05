@@ -17,14 +17,12 @@
 
 .login-card {
   background: var(--bg-surface);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--border-glass);
-  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
   padding: 40px 32px;
   width: 100%;
   max-width: 400px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
 }
@@ -109,19 +107,20 @@
 
 .input-field {
   width: 100%;
-  padding: 12px 14px;
+  padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
   background: var(--bg-surface);
   color: var(--text-primary);
   font-size: 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* very subtle internal shadow/glow feel */
 }
 
 .input-field:focus {
   outline: none;
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--accent-light);
+  box-shadow: 0 0 0 3px var(--accent-light), 0 1px 2px 0 rgba(0,0,0,0.05);
 }
 
 .error-msg {
@@ -140,19 +139,16 @@
    ========================================== */
 .card {
   background-color: var(--bg-surface);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--border-glass);
-  border-radius: 16px; /* increased to match glass aesthetic */
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
   padding: 24px;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-  border-color: var(--accent-light);
 }
 
 .stats-grid {
@@ -213,10 +209,8 @@
 .table-wrapper {
   overflow-x: auto;
   background: var(--bg-surface);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--border-glass);
-  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
   box-shadow: var(--shadow-sm);
 }
 
@@ -351,12 +345,12 @@ td:last-child {
 .skeleton-base {
   background: linear-gradient(to right, 
     var(--bg-panel) 0%, 
-    var(--accent-light) 20%, 
+    var(--bg-active) 20%, 
     var(--bg-panel) 40%);
   background-size: 800px 104px;
   animation: shimmer 1.8s linear infinite forwards;
   border-radius: 12px;
-  border: 1px solid var(--border-glass);
+  border: 1px solid var(--border-color);
 }
 
 .skeleton-card {

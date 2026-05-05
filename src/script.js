@@ -195,16 +195,20 @@ function renderAppStructure() {
   const mainRoot = document.getElementById('main-root');
   const footerRoot = document.getElementById('footer-root');
 
-  // getHTML() retorna HTML purinho em formato String contruido sob medida no formato "Liquid Glass"
   navbarRoot.innerHTML = getNavbarHTML(State.user);
   mainRoot.innerHTML = getMainHTML();
   footerRoot.innerHTML = getFooterHTML();
 
-  // Liga os botóes e ícones destas seções à lógica de navegação Javascript
+  // Aplica a Logo Customizada em todos os lugares
+  const currentLogo = State.getLogo();
+  document.querySelectorAll('.logo-img, .logo-img-large, .nav-logo img').forEach(img => {
+     img.src = currentLogo;
+  });
+
   setupNavbarInteractions(
-    navigateTo, // Função mandada de volta pra cá ao clicar num menu da navbar
-    performLogout, // Ao tentar deslogar no botão "Sair"
-    showNotificationHistory // Modalzinho longo do sino
+    navigateTo,
+    performLogout,
+    showNotificationHistory
   );
 }
 

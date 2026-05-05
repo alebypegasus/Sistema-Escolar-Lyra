@@ -21,25 +21,23 @@
 /* Saudação customizada da Dashboard */
 .main-greeting {
   margin-bottom: 32px;
-  background-color: var(--bg-surface);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--border-glass);
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: var(--shadow-sm);
+  background-color: transparent;
+  padding: 16px 8px;
 }
 
 .main-greeting h1 {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
+  letter-spacing: -0.03em;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .main-greeting p {
   color: var(--text-secondary);
   font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 /* Container fantasma e flexivel, estica atë o chao se o app for pequeno */
