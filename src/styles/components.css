@@ -64,6 +64,8 @@
 
 .login-card {
   background: var(--bg-surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 40px 32px;
@@ -75,7 +77,9 @@
 }
 
 .login-logo {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .login-logo img {
@@ -186,6 +190,8 @@
    ========================================== */
 .card {
   background-color: var(--bg-surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 24px;
@@ -256,6 +262,8 @@
 .table-wrapper {
   overflow-x: auto;
   background: var(--bg-surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: var(--shadow-sm);

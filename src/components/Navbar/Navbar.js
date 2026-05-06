@@ -13,6 +13,8 @@
 import './Navbar.css';
 import { State } from '../../store.js';
 
+import { ToggleSwitch } from '../ui/ToggleSwitch.js';
+
 /**
  * Função que renderiza a Navbar no container especificado.
  * Retorna uma string HTML literal.
@@ -21,14 +23,16 @@ import { State } from '../../store.js';
  */
 export function getNavbarHTML(user) {
   const isAdmin = user && user.isAdmin;
+  const sunIcon = `<svg id="theme-icon-sun" class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+  const moonIcon = `<svg id="theme-icon-moon" class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+
   return `
     <!-- Barra Superior (Top Navbar) -->
     <header class="navbar-wrapper">
       <div class="navbar-content">
         <!-- Logo isolado -->
         <div class="navbar-brand flex-row flex-align-center gap-12">
-          <img src="${State.getLogo()}" alt="Logo" style="max-height: 40px; display: block;" />
-          ${State.getSchoolInfo().name ? `<span class="fw-bold tracking-tight hide-on-mobile text-sm" style="color: var(--text-primary); border-left: 1px solid var(--border-color); padding-left: 12px; margin-left: 4px;">${State.getSchoolInfo().name}</span>` : ''}
+          <img src="${State.getLogo()}" alt="Logo" style="max-height: 48px; width: auto; object-fit: contain; display: block;" />
         </div>
 
         <!-- Links Centro (Apenas Desktop - escondido no celular via CSS) -->
@@ -41,8 +45,11 @@ export function getNavbarHTML(user) {
           <button class="nav-btn" data-nav="profile">Minha Conta</button>
         </nav>
 
-        <!-- Ações da Direita (Data/Hora, Sino de Notificações e Botão Sair) -->
+        <!-- Ações da Direita (Tema, Data/Hora, Sino de Notificações e Botão Sair) -->
         <div class="navbar-actions flex-align-center gap-16">
+          <!-- Theme Toggle Switch -->
+          ${ToggleSwitch({ id: 'checkbox', onIcon: sunIcon, offIcon: moonIcon })}
+
           <!-- Live Clock -->
           <div id="system-live-clock" class="text-xs text-secondary font-mono bg-panel px-12 py-4 border-radius-pill hide-on-mobile border"></div>
           
@@ -100,6 +107,31 @@ export function getNavbarHTML(user) {
  * @param {Function} onShowNotifications Callback que abre o modal de notificações.
  */
 export function setupNavbarInteractions(onNavigate, onLogout, onShowNotifications) {
+  // --- Theme Toggle Logic ---
+  const themeSwitch = document.getElementById('checkbox');
+  
+  const currentTheme = localStorage.getItem('lyra-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  
+  const applyTheme = (theme) => {
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (themeSwitch) themeSwitch.checked = true;
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      if (themeSwitch) themeSwitch.checked = false;
+    }
+    localStorage.setItem('lyra-theme', theme);
+  };
+
+  // Initial apply
+  applyTheme(currentTheme);
+
+  if (themeSwitch) {
+    themeSwitch.addEventListener('change', (e) => {
+      applyTheme(e.target.checked ? 'dark' : 'light');
+    });
+  }
+
   // Pega todos os botões que têm o atributo 'data-nav' (desktop e mobile)
   const navBtns = document.querySelectorAll('[data-nav]');
   

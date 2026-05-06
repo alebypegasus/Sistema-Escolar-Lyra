@@ -8,6 +8,8 @@
 /* Container geral da navbar */
 .navbar-wrapper {
   background-color: var(--bg-surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
   border-bottom: 1px solid var(--border-color);
   position: fixed;
   top: 0;
@@ -18,7 +20,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.02);
+  box-shadow: 0 1px 24px rgba(0,0,0,0.02);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .navbar-content {
@@ -151,11 +154,13 @@
     left: 0;
     width: 100%;
     background-color: var(--bg-surface);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-around;
     padding: 8px 0;
-    box-shadow: 0 -1px 2px rgba(0,0,0,0.02);
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
     z-index: 100;
     padding-bottom: calc(8px + env(safe-area-inset-bottom));
   }
@@ -167,25 +172,123 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 500;
     color: var(--text-secondary);
     cursor: pointer;
     flex: 1;
+    padding: 8px 4px;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .nav-btn-mobile svg {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), fill 0.3s;
+  }
+
+  .nav-btn-mobile:hover {
+    background: var(--bg-hover);
   }
 
   .nav-btn-mobile.active {
     color: var(--accent-color);
+  }
+  
+  .nav-btn-mobile.active svg {
+    transform: translateY(-2px) scale(1.15);
+    fill: var(--accent-light);
   }
 
   /* Compensa o conteúdo principal para não ser coberto pela bottom bar */
   body {
     padding-bottom: 70px;
   }
+}
+
+/* Theme Toggle Switch */
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.theme-switch {
+  display: inline-block;
+  height: 26px;
+  position: relative;
+  width: 50px;
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.slider {
+  background-color: var(--border-color);
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  justify-content: space-between;
+}
+
+.slider:before {
+  background-color: #fff;
+  bottom: 3px;
+  content: "";
+  height: 20px;
+  left: 3px;
+  position: absolute;
+  transition: .4s;
+  width: 20px;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.slider svg {
+  color: var(--text-secondary);
+  transition: .4s;
+  z-index: 1;
+}
+
+.slider .sun-icon {
+  margin-left: 2px;
+}
+
+.slider .moon-icon {
+  margin-right: 2px;
+}
+
+input:checked + .slider .sun-icon {
+  color: rgba(255,255,255,0.4);
+}
+
+input:not(:checked) + .slider .moon-icon {
+  color: var(--text-secondary);
+  opacity: 0.5;
 }
 
 /* Esconder barra mobile no desktop */

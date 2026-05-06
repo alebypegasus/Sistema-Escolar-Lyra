@@ -2,22 +2,22 @@ export function renderDashboard(container, State) {
   if (State.userType === 'student') {
     const s = State.user;
     container.innerHTML = `
-      <div class="stats-grid">
-        <div class="card">
-          <div class="stat-label">Média Geral Acadêmica</div>
-          <div class="stat-val ${s.average >= 7 ? 'text-success' : 'text-danger'}">${s.average}</div>
+      <div class="stats-grid mb-32">
+        <div class="card p-24" >
+          <div class="stat-label mb-8">Média Geral Acadêmica</div>
+          <div class="text-4xl fw-bolder ${s.average >= 7 ? 'text-success' : 'text-danger'}">${s.average}</div>
         </div>
-        <div class="card">
-          <div class="stat-label">Frequência Semestral</div>
-          <div class="stat-val">${s.attendance}%</div>
+        <div class="card p-24" >
+          <div class="stat-label mb-8">Frequência Semestral</div>
+          <div class="text-4xl fw-bolder">${s.attendance}%</div>
         </div>
       </div>
-      <div class="card flex-between-center action-banner">
+      <div class="card p-24 flex-between-center flex-wrap gap-16 action-banner" >
         <div class="action-banner-text">
-          <h3 class="action-banner-title">Inscrição para o TCC</h3>
+          <h3 class="text-xl fw-bolder text-primary mb-4">Inscrição para o TCC</h3>
           <p class="text-secondary text-sm">O prazo letivo encerra em 20 de Novembro de 2026.</p>
         </div>
-        <button class="btn-primary w-auto" onclick="alert('Funcionalidade em desenvolvimento!')">Inscrever-se</button>
+        <button class="btn-primary w-auto"  onclick="alert('Funcionalidade em desenvolvimento!')">Inscrever-se</button>
       </div>
     `;
   } else {
@@ -68,15 +68,15 @@ export function renderDashboard(container, State) {
     
     if (pendingRequestsCount > 0) {
       pendingRequestsHTML = `
-        <div class="card status-card alert-warning mt-24">
-          <div>
-            <h3 class="status-title text-warning">
+        <div class="card hover-fluid status-card alert-warning mt-24 p-24" >
+          <div class="flex-col gap-8">
+            <h3 class="status-title text-warning text-lg fw-bold">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
               Justificativas Pendentes
             </h3>
-            <p class="status-subtitle">Você possui ${pendingRequestsCount} atestado(s)/justificativa(s) aguardando avaliação.</p>
+            <p class="text-sm" style="color: var(--warning-color); opacity: 0.8;">Você possui ${pendingRequestsCount} atestado(s)/justificativa(s) aguardando avaliação.</p>
           </div>
-          <button id="btn-dashboard-pending-just" class="btn-primary w-auto btn-warning">Revisar Justificativas</button>
+          <button id="btn-dashboard-pending-just" class="btn-primary w-auto btn-warning" >Revisar</button>
         </div>
       `;
       
@@ -87,15 +87,15 @@ export function renderDashboard(container, State) {
     let lowAttHTML = '';
     if (hasLowAtt) {
       const subjectAccordions = Object.entries(lowAttBySubject).map(([subName, students]) => `
-        <details class="accordion-card">
-          <summary class="accordion-summary">
+        <details class="accordion-card" >
+          <summary class="accordion-summary" style="padding: 16px;">
             ${subName}
             <span class="pill danger no-pointer">${students.length} aluno(s)</span>
           </summary>
-          <div class="accordion-content">
-            <ul class="student-list">
+          <div class="accordion-content" style="border-top: 1px dotted var(--border-color); background: transparent;">
+            <ul class="student-list gap-8 flex-col">
               ${students.map(s => `
-                <li class="btn-view-student list-item-card" data-sid="${s.id}">
+                <li class="btn-view-student list-item-card hover-fluid" data-sid="${s.id}" >
                   <div class="list-item-info">
                     <span class="list-item-title">${s.name}</span>
                     <span class="list-item-subtitle">${s.registration} | Turno: ${s.shift || 'Geral'}</span>
@@ -109,10 +109,10 @@ export function renderDashboard(container, State) {
       `).join('');
 
       lowAttHTML = `
-        <div class="card status-card alert-danger mt-24">
-          <h3 class="status-title text-danger mb-16">
+        <div class="card alert-danger mt-24 p-24" >
+          <h3 class="status-title text-danger mb-16 text-lg fw-bold">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            Alunos com Frequência Crítica (< 75%)
+            Frequência Crítica (< 75%)
           </h3>
           ${subjectAccordions}
         </div>
@@ -120,18 +120,21 @@ export function renderDashboard(container, State) {
     }
 
     container.innerHTML = `
-      <div class="stats-grid">
-        <div class="card">
-          <div class="stat-label">Alunos Matriculados</div>
-          <div class="stat-val">${enrolled}</div>
+      <div class="stats-grid mb-32">
+        <div class="card p-24 hover-fluid" >
+          <div class="stat-label mb-8">Alunos Matriculados</div>
+          <div class="text-4xl fw-bolder" style="color: var(--color-brand-primary)">${enrolled}</div>
         </div>
-        <div class="card">
-          <div class="stat-label">Média da Turma: ${p.subject}</div>
-          <div class="stat-val">${classAvg}</div>
+        <div class="card p-24 hover-fluid" >
+          <div class="stat-label mb-8">Média da Turma</div>
+          <div class="flex-between-center">
+            <div class="text-4xl fw-bolder">${classAvg}</div>
+            <span class="pill accent">${p.subject}</span>
+          </div>
         </div>
       </div>
-      <div class="card mt-24">
-        <h3>Próximos Passos</h3>
+      <div class="card p-24 mt-24 hover-fluid" >
+        <h3 class="text-xl fw-bold" style="color: var(--color-brand-primary)">Próximos Passos</h3>
         <p class="text-secondary text-sm mt-8">A revisão bimestral precisa ser encerrada até a pŕoxima semana para o conselho de classe.</p>
       </div>
       ${pendingRequestsHTML}

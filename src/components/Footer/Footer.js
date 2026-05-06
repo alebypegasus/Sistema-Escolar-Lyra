@@ -20,9 +20,6 @@ export function getFooterHTML() {
   return `
     <footer class="footer-wrapper">
       <div class="footer-content">
-        <div class="footer-brand">
-          Firjan SENAI &copy; ${currentYear}
-        </div>
         <ul class="footer-links">
           <li><a href="#">Termos de Uso</a></li>
           <li><a href="#">Privacidade</a></li>

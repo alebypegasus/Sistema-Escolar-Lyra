@@ -232,6 +232,11 @@ function setupLogin() {
       }, 400); 
     } else {
       errorMsg.classList.remove('hidden');
+      const inputs = loginForm.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.classList.add('login-error-shake');
+        setTimeout(() => input.classList.remove('login-error-shake'), 400);
+      });
     }
   });
 }
@@ -340,7 +345,7 @@ function showNotificationHistory() {
  * SISTEMA DE ROTEAMENTO INTERNO (SPA)
  * Com suporte a Skeleton Loading e Transições de mola.
  */
-function navigateTo(page) {
+function navigateTo(page, force = false) {
   // Proteção de Rota: Apenas administradores acessam Documentação e Admin
   if ((page === 'presentation' || page === 'admin') && !State.user.isAdmin) {
     page = 'dashboard';
@@ -349,7 +354,7 @@ function navigateTo(page) {
   // Com o HTML modular, se a div não existe ainda (ex: antes de renderAppStructure), não execute.
   if(!document.getElementById(`page-${page}`)) return;
 
-  if (State.currentPage === page && document.getElementById(`page-${page}`).innerHTML.trim() !== '') return;
+  if (State.currentPage === page && document.getElementById(`page-${page}`).innerHTML.trim() !== '' && !force) return;
   State.currentPage = page;
 
   // Atualiza componentes visuais (Navbar, Header Central)

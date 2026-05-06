@@ -1,52 +1,50 @@
 export const Notifications = {
-  queue: [],
-  isShowing: false,
+  containerId: 'notification-container',
+  
+  init() {
+    if (!document.getElementById(this.containerId)) {
+      const div = document.createElement('div');
+      div.id = this.containerId;
+      document.body.appendChild(div);
+    }
+  },
 
   show(title, message, type = 'info') {
-    this.queue.push({ title, message, type });
-    this.processQueue();
-  },
-
-  processQueue() {
-    if (this.isShowing || this.queue.length === 0) return;
-    this.isShowing = true;
+    this.init();
+    const container = document.getElementById(this.containerId);
+    if (!container) return;
     
-    const notif = this.queue.shift();
-    this.render(notif);
-  },
+    let color = 'var(--text-primary)';
+    if(type === 'success') color = 'var(--success-color)';
+    if(type === 'danger') color = 'var(--danger-color)';
+    if(type === 'warning') color = 'var(--warning-color)';
+    if(type === 'info') color = 'var(--accent-color)';
 
-  render(notif) {
-    let container = document.getElementById('notification-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'notification-container';
-      document.body.appendChild(container);
-    }
+    const toast = document.createElement('div');
+    toast.className = 'notification-toast';
+    toast.style.borderLeft = `4px solid ${color}`;
     
-    const el = document.createElement('div');
-    el.className = `notification-toast notif-${notif.type}`;
-    el.innerHTML = `
-      <div class="notif-content">
-        <div class="notif-title">${notif.title}</div>
-        <div class="notif-msg">${notif.message}</div>
+    toast.innerHTML = `
+      <div class="flex-between-center">
+         <div class="notif-title" style="color: ${color}">${title}</div>
+         <button class="btn-icon" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);" onclick="this.parentElement.parentElement.remove()">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+         </button>
       </div>
+      <div class="notif-msg mt-4">${message}</div>
     `;
-
-    container.appendChild(el);
     
-    // Trigger layout
-    void el.offsetWidth;
-
-    // Animate in
-    el.classList.add('show');
-
+    container.appendChild(toast);
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+    
+    // Auto-remove after 5s
     setTimeout(() => {
-      el.classList.remove('show');
-      setTimeout(() => {
-        el.remove();
-        this.isShowing = false;
-        this.processQueue();
-      }, 600); // Wait for CSS transition (0.6s)
-    }, 4000); // Display time
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 600);
+    }, 5000);
   }
 };

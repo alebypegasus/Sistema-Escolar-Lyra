@@ -1,26 +1,26 @@
 /* ==========================================
-   SISTEMA DE TEMAS E CORES (LIQUID GLASS)
+   SISTEMA DE TEMAS E CORES (LIQUID GLASS / MACOS TAHOE)
    O tema será automático pelo sistema.
    ========================================== */
 
 :root {
   /* TEMA CLARO - High-End SaaS Utility */
   --bg-body: #f4f4f5;
-  --bg-surface: #ffffff;
-  --bg-panel: #fafafa;
-  --bg-hover: #f4f4f5;
-  --bg-active: #e4e4e7;
+  --bg-surface: rgba(255, 255, 255, 0.7);
+  --bg-panel: rgba(255, 255, 255, 0.4);
+  --bg-hover: rgba(255, 255, 255, 0.9);
+  --bg-active: rgba(228, 228, 231, 0.7);
   
-  --border: #e4e4e7;
-  --border-color: #e4e4e7;
+  --border: rgba(228, 228, 231, 0.5);
+  --border-color: rgba(228, 228, 231, 0.5);
   --border-radius: 12px;
-  --border-glass: #e4e4e7; /* Remover glass logic mas manter prop */
+  --border-glass: rgba(255, 255, 255, 0.6);
   
   --text-primary: #18181b;
   --text-secondary: #71717a;
   --text-muted: #a1a1aa;
   
-  /* Logotipo Firjan SENAI / Brand Colors */
+  /* Brand Colors */
   --accent: #2563eb;
   --accent-color: #2563eb;
   --accent-light: rgba(37, 99, 235, 0.08);
@@ -41,58 +41,62 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
   --shadow: var(--shadow-sm);
-  --blur: none;
+  --blur: blur(24px) saturate(180%);
   color-scheme: light;
 }
 
+[data-theme='dark'] {
+  /* TEMA ESCURO - Modern Dark Mode */
+  --bg-body: #09090b;
+  --bg-surface: rgba(24, 24, 27, 0.7);
+  --bg-panel: rgba(39, 39, 42, 0.5);
+  --bg-hover: rgba(39, 39, 42, 0.8);
+  --bg-active: rgba(63, 63, 70, 0.8);
+  
+  --border: rgba(39, 39, 42, 0.5);
+  --border-color: rgba(39, 39, 42, 0.5);
+  --border-glass: rgba(255, 255, 255, 0.05);
+  
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  
+  --accent: #3b82f6;
+  --accent-color: #3b82f6;
+  --accent-light: rgba(59, 130, 246, 0.15);
+  --accent-hover: #60a5fa;
+  
+  --success: #10b981;
+  --success-color: #10b981;
+  --success-light: rgba(16, 185, 129, 0.15);
+  
+  --danger: #ef4444;
+  --danger-color: #ef4444;
+  --danger-light: rgba(239, 68, 68, 0.15);
+  
+  --warning: #fbbf24;
+  --warning-color: #fbbf24;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow: var(--shadow-sm);
+  --blur: blur(24px) saturate(180%);
+  color-scheme: dark;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    /* TEMA ESCURO - Modern Dark Mode */
-    --bg-body: #09090b;
-    --bg-surface: #18181b;
-    --bg-panel: #27272a;
-    --bg-hover: #27272a;
-    --bg-active: #3f3f46;
-    
-    --border: #27272a;
-    --border-color: #27272a;
-    --border-glass: #27272a;
-    
-    --text-primary: #fafafa;
-    --text-secondary: #a1a1aa;
-    --text-muted: #71717a;
-    
-    --accent: #3b82f6;
-    --accent-color: #3b82f6;
-    --accent-light: rgba(59, 130, 246, 0.15);
-    --accent-hover: #60a5fa;
-    
-    --success: #10b981;
-    --success-color: #10b981;
-    --success-light: rgba(16, 185, 129, 0.15);
-    
-    --danger: #ef4444;
-    --danger-color: #ef4444;
-    --danger-light: rgba(239, 68, 68, 0.15);
-    
-    --warning: #fbbf24;
-    --warning-color: #fbbf24;
-    
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-    --shadow: var(--shadow-sm);
-    --blur: none;
-    color-scheme: dark;
+  :root:not([data-theme='light']) {
+     /* Handled by script */
   }
 }
 
 body {
   background-color: var(--bg-body);
-  /* Fundo sem glass, sólido, com um gradient sutil no topo para profundidade */
   background-image: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-body) 15vh);
   background-repeat: no-repeat;
   color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;

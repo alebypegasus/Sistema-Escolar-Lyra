@@ -20,27 +20,76 @@ if (localStorage.getItem('lyra_db_version') !== DB_VERSION) {
 // Este objeto db abstrai o acesso ao localStorage, simulando um banco de dados NoSQL.
 // Utilizamos getters e setters para garantir que os dados estejam sempre sincronizados com o navegador.
 const db = {
+  // Cache em memória para reduzir latência e processamento de JSON.parse
+  _cache: {
+    students: null,
+    professors: null,
+    courses: null,
+    admins: null,
+    notifications: null
+  },
+
   // Retorna a lista de estudantes. Se não existir, retorna um array vazio.
-  get students() { return JSON.parse(localStorage.getItem('lyra_students')) || []; },
+  get students() { 
+    if (!this._cache.students) {
+      this._cache.students = JSON.parse(localStorage.getItem('lyra_students')) || [];
+    }
+    return this._cache.students;
+  },
   
   // Retorna a lista de professores.
-  get professors() { return JSON.parse(localStorage.getItem('lyra_professors')) || []; },
+  get professors() { 
+    if (!this._cache.professors) {
+      this._cache.professors = JSON.parse(localStorage.getItem('lyra_professors')) || [];
+    }
+    return this._cache.professors;
+  },
   
   // Retorna a lista de cursos/módulos cadastrados.
-  get courses() { return JSON.parse(localStorage.getItem('lyra_courses')) || []; },
+  get courses() { 
+    if (!this._cache.courses) {
+      this._cache.courses = JSON.parse(localStorage.getItem('lyra_courses')) || [];
+    }
+    return this._cache.courses;
+  },
   
   // Retorna a lista de administradores da secretaria.
-  get admins() { return JSON.parse(localStorage.getItem('lyra_admins')) || []; },
+  get admins() { 
+    if (!this._cache.admins) {
+      this._cache.admins = JSON.parse(localStorage.getItem('lyra_admins')) || [];
+    }
+    return this._cache.admins; 
+  },
   
   // Retorna o histórico global de notificações.
-  get notifications() { return JSON.parse(localStorage.getItem('lyra_notifications')) || []; },
+  get notifications() { 
+    if (!this._cache.notifications) {
+      this._cache.notifications = JSON.parse(localStorage.getItem('lyra_notifications')) || [];
+    }
+    return this._cache.notifications; 
+  },
   
   // Métodos de salvamento (Persistência)
-  saveStudents(data) { localStorage.setItem('lyra_students', JSON.stringify(data)); },
-  saveProfessors(data) { localStorage.setItem('lyra_professors', JSON.stringify(data)); },
-  saveCourses(data) { localStorage.setItem('lyra_courses', JSON.stringify(data)); },
-  saveAdmins(data) { localStorage.setItem('lyra_admins', JSON.stringify(data)); },
-  saveNotifications(data) { localStorage.setItem('lyra_notifications', JSON.stringify(data)); },
+  saveStudents(data) { 
+    this._cache.students = data;
+    localStorage.setItem('lyra_students', JSON.stringify(data)); 
+  },
+  saveProfessors(data) { 
+    this._cache.professors = data;
+    localStorage.setItem('lyra_professors', JSON.stringify(data)); 
+  },
+  saveCourses(data) { 
+    this._cache.courses = data;
+    localStorage.setItem('lyra_courses', JSON.stringify(data)); 
+  },
+  saveAdmins(data) { 
+    this._cache.admins = data;
+    localStorage.setItem('lyra_admins', JSON.stringify(data)); 
+  },
+  saveNotifications(data) { 
+    this._cache.notifications = data;
+    localStorage.setItem('lyra_notifications', JSON.stringify(data)); 
+  },
   
   // Identidade Visual
   get customLogo() { return localStorage.getItem('lyra_custom_logo'); },
@@ -190,7 +239,9 @@ export const State = {
           ...profs[idx], 
           name: data.name,
           password: data.password || profs[idx].password,
-          subject: data.subject
+          subject: data.subject,
+          rg: data.rg || profs[idx].rg,
+          cpf: data.cpf || profs[idx].cpf
         };
         this.db.saveProfessors(profs);
         return { success: true, message: 'Professor atualizado!' };
@@ -205,6 +256,8 @@ export const State = {
       name: data.name,
       password: data.password || "admin123",
       subject: data.subject,
+      rg: data.rg || '',
+      cpf: data.cpf || '',
       photo: `https://i.pravatar.cc/150?u=${id}`,
       notifications: []
     });
@@ -215,6 +268,21 @@ export const State = {
 
   registerAdmin(adminData) {
     const admins = this.db.admins;
+    const isEdit = !!adminData.id_orig;
+
+    if (isEdit) {
+      const idx = admins.findIndex(a => a.id === adminData.id_orig);
+      if (idx > -1) {
+        admins[idx] = { 
+          ...admins[idx], 
+          name: adminData.name,
+          password: adminData.password || admins[idx].password
+        };
+        this.db.saveAdmins(admins);
+        return { success: true, message: 'Gestor atualizado!' };
+      }
+    }
+
     const id = adminData.id || `adm${Date.now()}`;
     
     if (admins.find(a => a.id === id) || id === 'admin') {

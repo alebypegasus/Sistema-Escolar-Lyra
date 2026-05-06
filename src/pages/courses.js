@@ -2,22 +2,24 @@ export function renderCourses(container, State) {
   if (State.userType === 'student') {
     const s = State.user;
     container.innerHTML = `
-      <div class="mb-24">
-        <h2 class="fw-bolder mb-4" style="font-size: 20px;">Meu Curso</h2>
-        <p class="text-secondary text-sm">Você está matriculado(a) em: <strong class="text-primary">${s.courseName || 'Curso Padrão'}</strong></p>
+      <div class="card p-24 mb-24 flex-between-center flex-wrap gap-24 relative overflow-hidden" >
+        <div class="flex-col gap-4 z-10">
+          <h2 class="text-2xl fw-bolder tracking-tight" style="color: var(--color-brand-primary)">Meu Curso</h2>
+          <p class="text-secondary text-sm">Você está matriculado(a) em: <strong class="text-primary">${s.courseName || 'Curso Padrão'}</strong></p>
+        </div>
       </div>
-      <h3 class="fw-bold mb-16" style="font-size: 16px;">Minhas Disciplinas (Este Semestre)</h3>
+      <h3 class="fw-bold mb-16 text-lg" style="animation: liquid-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s backwards;">Minhas Disciplinas (Este Semestre)</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
-        ${(s.subjects || []).map(sub => `
-          <div class="card">
-            <h3 class="mb-4">${sub.name}</h3>
-            <p class="text-secondary text-xs mb-24">${sub.professor}</p>
-            <div class="flex-between-center text-xs text-secondary mb-8">
+        ${(s.subjects || []).map((sub, idx) => `
+          <div class="card p-24 hover-fluid" >
+            <h3 class="fw-bold mb-4 text-xl" style="color: var(--color-brand-primary)">${sub.name}</h3>
+            <p class="text-secondary text-sm mb-24">Prof. ${sub.professor}</p>
+            <div class="flex-between-center text-xs text-secondary mb-8 font-medium tracking-wider uppercase">
               <span>Andamento do Semestre</span>
-              <span>Em curso</span>
+              <span class="text-primary">Em curso</span>
             </div>
-            <div class="progress-bar-container">
-              <div class="progress-bar-fill progress-65"></div>
+            <div class="progress-bar-container" style="background: rgba(0,0,0,0.05); border: none;">
+              <div class="progress-bar-fill progress-65" style="background: var(--color-brand-primary)"></div>
             </div>
           </div>
         `).join('')}
@@ -29,12 +31,14 @@ export function renderCourses(container, State) {
     const p = State.user;
     const courses = State.db.courses || [];
     container.innerHTML = `
-      <div class="mb-24">
-        <h2 class="fw-bolder mb-4" style="font-size: 20px;">Gerenciar Cursos da Instituição</h2>
-        <p class="text-secondary text-sm">Crie, edite ou remova cursos do banco de dados utilizando os controles no topo da página e na tabela abaixo.</p>
+      <div class="card p-24 mb-24 flex-between-center flex-wrap gap-24 relative overflow-hidden" >
+        <div class="flex-col gap-4 z-10">
+          <h2 class="text-2xl fw-bolder tracking-tight" style="color: var(--color-brand-primary)">Gerenciar Cursos da Instituição</h2>
+          <p class="text-secondary text-sm">Crie, edite ou remova cursos do banco de dados utilizando os controles abaixos.</p>
+        </div>
       </div>
 
-      <div class="table-wrapper">
+      <div class="table-wrapper card hover-fluid" >
         <table>
           <thead>
             <tr>

@@ -9,6 +9,8 @@
  * ============================================================================
  */
 
+import { Notifications } from '../notifications.js';
+
 export function renderAdmin(container, State) {
   // Verifica se o usuário atual tem a permissão de administrador ("Gestor")
   if (!State.user || !State.user.isAdmin) {
@@ -128,6 +130,47 @@ export function renderAdmin(container, State) {
         padding: 16px 24px;
         vertical-align: middle;
       }
+      
+      /* Dropdown Export Styles */
+      .export-dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      .export-menu {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 8px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: var(--shadow-lg);
+        z-index: 100;
+        min-width: 160px;
+        overflow: hidden;
+        animation: slideDown 0.2s ease-out;
+      }
+      .export-menu-item {
+        width: 100%;
+        padding: 12px 16px;
+        text-align: left;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .export-menu-item:hover {
+        background: var(--bg-panel);
+      }
+      @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     </style>
   `;
 }
@@ -147,15 +190,22 @@ function renderTabContent(tab, State) {
               <p class="text-xs text-secondary mt-4">Gerencie os professores ativos do sistema.</p>
             </div>
             <div class="flex-row gap-8 flex-wrap">
-              <button class="btn-outline btn-outline-neutral px-12 py-8 flex-align-center text-xs" id="btn-export-profs-csv" title="Exportar CSV"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> CSV</button>
-              <button class="btn-outline btn-outline-neutral px-12 py-8 flex-align-center text-xs" id="btn-export-profs-pdf" title="Exportar PDF/Imprimir"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> PDF</button>
-              <button class="btn-danger flex-align-center text-xs hidden" id="btn-delete-selected-profs">Excluir Selecionados</button>
+              <div class="export-dropdown">
+                <button class="btn-outline btn-outline-neutral px-16 py-8 flex-align-center text-xs btn-export-toggle" data-target="profs">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Exportar Dados
+                </button>
+                <div class="export-menu hidden" id="export-menu-profs">
+                  <button class="export-menu-item" id="btn-export-profs-csv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Planilha (CSV)</button>
+                  <button class="export-menu-item" id="btn-export-profs-pdf"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> Documento (PDF)</button>
+                </div>
+              </div>
+              <button class="btn-danger flex-align-center text-xs hidden" id="btn-delete-selected-professors">Excluir Selecionados</button>
               <button class="btn-primary flex-align-center" style="width: auto;" id="btn-open-prof-modal">${plusIcon} Novo Professor</button>
             </div>
           </div>
           <div class="table-wrapper border-none shadow-none border-radius-0" id="print-profs">
             <table>
-              <thead><tr><th style="width: 40px;"><input type="checkbox" id="select-all-profs"></th><th>Nome / Registro</th><th>Especialidade</th><th>ID de Login</th><th class="text-right no-print">Ações</th></tr></thead>
+              <thead><tr><th style="width: 40px;"><input type="checkbox" id="select-all-professors"></th><th>Nome / Registro</th><th>Especialidade</th><th>ID de Login</th><th class="text-right no-print">Ações</th></tr></thead>
               <tbody>
                 ${State.db.professors.length > 0 ? State.db.professors.map(p => `
                   <tr>
@@ -180,17 +230,48 @@ function renderTabContent(tab, State) {
         </div>`;
     
     case 'students':
+      const studentPage = window.adminStudentPage || 1;
+      const itemsPerPage = 10;
+      
+      // We need to apply the same filter logic used in JS to determine what to paginate
+      // This is slightly complex in vanilla JS because filters happen on the DOM.
+      // Better approach: filter the array in memory, then paginate.
+      const rawStudents = State.db.students;
+      
+      // Get filter values from global state (we'll save them there during setup)
+      const searchTerm = (window.adminStudentSearch || '').toLowerCase();
+      const shiftFilterValue = window.adminStudentShift || '';
+      const searchTerms = searchTerm.split(/\s+/).filter(t => t.length > 0);
+      
+      const filteredStudents = rawStudents.filter(s => {
+        const content = `${s.name} ${s.registration} ${s.courseName}`.toLowerCase();
+        const matchesSearch = searchTerms.every(t => content.includes(t));
+        const matchesShift = shiftFilterValue === '' || s.shift === shiftFilterValue;
+        return matchesSearch && matchesShift;
+      });
+      
+      const totalStudents = filteredStudents.length;
+      const totalPages = Math.ceil(totalStudents / itemsPerPage) || 1;
+      const pagedStudents = filteredStudents.slice((studentPage - 1) * itemsPerPage, studentPage * itemsPerPage);
+
       return `
         <div class="card p-0 table-card bg-surface shadow-sm mb-24">
           <div class="flex-col p-24 border-bottom gap-16">
             <div class="flex-between-center flex-wrap gap-16">
               <div>
                 <h2 class="fw-bold text-lg m-0">Matrículas</h2>
-                <p class="text-xs text-secondary mt-4">Lista completa de alunos matriculados.</p>
+                <p class="text-xs text-secondary mt-4">Mostrando ${pagedStudents.length} de ${totalStudents} alunos.</p>
               </div>
               <div class="flex-row gap-8 flex-wrap">
-                <button class="btn-outline btn-outline-neutral px-12 py-8 flex-align-center text-xs" id="btn-export-students-csv" title="Exportar CSV"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> CSV</button>
-                <button class="btn-outline btn-outline-neutral px-12 py-8 flex-align-center text-xs" id="btn-export-students-pdf" title="Exportar PDF/Imprimir"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> PDF</button>
+                <div class="export-dropdown">
+                  <button class="btn-outline btn-outline-neutral px-16 py-8 flex-align-center text-xs btn-export-toggle" data-target="students">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Exportar Dados
+                  </button>
+                  <div class="export-menu hidden" id="export-menu-students">
+                    <button class="export-menu-item" id="btn-export-students-csv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Planilha (CSV)</button>
+                    <button class="export-menu-item" id="btn-export-students-pdf"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> Documento (PDF)</button>
+                  </div>
+                </div>
                 <button class="btn-danger flex-align-center text-xs hidden" id="btn-delete-selected-students">Excluir Selecionados</button>
                 <button class="btn-primary flex-align-center" style="width: auto;" id="btn-open-student-modal">${plusIcon} Matricular Aluno</button>
               </div>
@@ -198,13 +279,13 @@ function renderTabContent(tab, State) {
             <div class="flex-row gap-12 flex-align-center flex-wrap">
               <div class="flex-row gap-12 flex-align-center bg-panel p-12 border-radius-8 border flex-1 min-w-250">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-secondary"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="student-search-input" class="bg-transparent border-none text-sm flex-1 outline-none" placeholder="Buscar por Nome, Matrícula ou Curso...">
+                <input type="text" id="student-search-input" class="bg-transparent border-none text-sm flex-1 outline-none" placeholder="Buscar por Nome, Matrícula ou Curso..." value="${window.adminStudentSearch || ''}">
               </div>
               <select id="student-shift-filter" class="input-field py-10 px-12 text-sm border-radius-8" style="width: auto; min-width: 140px; height: 44px;">
-                <option value="">Todos os Turnos</option>
-                <option value="Manhã">Manhã</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noite">Noite</option>
+                <option value="" ${shiftFilterValue === '' ? 'selected' : ''}>Todos os Turnos</option>
+                <option value="Manhã" ${shiftFilterValue === 'Manhã' ? 'selected' : ''}>Manhã</option>
+                <option value="Tarde" ${shiftFilterValue === 'Tarde' ? 'selected' : ''}>Tarde</option>
+                <option value="Noite" ${shiftFilterValue === 'Noite' ? 'selected' : ''}>Noite</option>
               </select>
             </div>
           </div>
@@ -212,7 +293,7 @@ function renderTabContent(tab, State) {
             <table>
               <thead><tr><th style="width: 40px;"><input type="checkbox" id="select-all-students"></th><th>Aluno</th><th>RA / Matrícula</th><th>Curso (Turno)</th><th class="text-right no-print">Ações</th></tr></thead>
               <tbody id="student-table-body">
-                ${State.db.students.length > 0 ? State.db.students.map(s => `
+                ${pagedStudents.length > 0 ? pagedStudents.map(s => `
                   <tr class="student-row">
                     <td><input type="checkbox" class="student-checkbox" value="${s.id}"></td>
                     <td>
@@ -229,11 +310,41 @@ function renderTabContent(tab, State) {
                          <button class="btn-icon text-danger delete-item" data-type="student" data-id="${s.id}" title="Remover">${icoTrash}</button>
                        </div>
                     </td>
-                  </tr>`).join('') : `<tr id="no-students-row"><td colspan="5" class="text-center p-32 text-secondary">Nenhum aluno matriculado.</td></tr>`}
+                  </tr>`).join('') : `<tr><td colspan="5" class="text-center p-32 text-secondary">Nenhum aluno encontrado para os critérios de busca.</td></tr>`}
               </tbody>
             </table>
           </div>
-        </div>`;
+          
+          <!-- Pagination Controls -->
+          ${totalPages > 1 ? `
+          <div class="p-16 border-top flex-between-center flex-wrap gap-12 bg-panel">
+            <div class="text-xs text-secondary">
+              Página <strong>${studentPage}</strong> de ${totalPages}
+            </div>
+            <div class="flex-row gap-4">
+              <button class="btn-icon border ${studentPage === 1 ? 'disabled opacity-50' : ''}" id="prev-students-page" ${studentPage === 1 ? 'disabled' : ''}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              ${Array.from({length: totalPages}, (_, i) => i + 1).map(p => {
+                if (totalPages > 7) {
+                   if (p === 1 || p === totalPages || (p >= studentPage - 1 && p <= studentPage + 1)) {
+                      return `<button class="btn-icon border ${p === studentPage ? 'active-page' : ''}" data-page="${p}">${p}</button>`;
+                   } else if (p === studentPage - 2 || p === studentPage + 2) {
+                      return `<span class="px-8 text-secondary">...</span>`;
+                   }
+                   return '';
+                }
+                return `<button class="btn-icon border ${p === studentPage ? 'active-page' : ''}" data-page="${p}">${p}</button>`;
+              }).join('')}
+              <button class="btn-icon border ${studentPage === totalPages ? 'disabled opacity-50' : ''}" id="next-students-page" ${studentPage === totalPages ? 'disabled' : ''}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>` : ''}
+        </div>
+        <style>
+          .active-page { background: var(--accent-color) !important; color: white !important; border-color: var(--accent-color) !important; }
+        </style>`;
 
     case 'admins':
       return `
@@ -261,7 +372,10 @@ function renderTabContent(tab, State) {
                     <td><div class="fw-bold text-sm">${a.name}</div></td>
                     <td><code class="text-xs bg-panel px-8 py-4 border-radius-4 border">${a.id}</code></td>
                     <td class="text-right">
-                      <button class="btn-icon text-danger delete-item" data-type="admin" data-id="${a.id}" title="Revogar acesso">${icoTrash}</button>
+                      <div class="flex-row gap-8 justify-end">
+                        <button class="btn-icon edit-admin" data-id="${a.id}" title="Editar">${icoEdit}</button>
+                        <button class="btn-icon text-danger delete-item" data-type="admin" data-id="${a.id}" title="Revogar acesso">${icoTrash}</button>
+                      </div>
                     </td>
                   </tr>`).join('')}
               </tbody>
@@ -279,8 +393,15 @@ function renderTabContent(tab, State) {
                 <p class="text-xs text-secondary mt-4">Cursos ofertados pela instituição.</p>
               </div>
               <div class="flex-row gap-8 flex-wrap">
-                <button class="btn-outline btn-outline-neutral px-12 py-8 flex-align-center text-xs" id="btn-export-courses-csv" title="Exportar CSV"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> CSV</button>
-                <button class="btn-outline btn-outline-neutral px-12 py-8 flex-align-center text-xs" id="btn-export-courses-pdf" title="Exportar PDF/Imprimir"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> PDF</button>
+                <div class="export-dropdown">
+                  <button class="btn-outline btn-outline-neutral px-16 py-8 flex-align-center text-xs btn-export-toggle" data-target="courses">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Exportar Dados
+                  </button>
+                  <div class="export-menu hidden" id="export-menu-courses">
+                    <button class="export-menu-item" id="btn-export-courses-csv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Planilha (CSV)</button>
+                    <button class="export-menu-item" id="btn-export-courses-pdf"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> Documento (PDF)</button>
+                  </div>
+                </div>
                 <button class="btn-danger flex-align-center text-xs hidden" id="btn-delete-selected-courses">Excluir Selecionados</button>
                 <button class="btn-primary flex-align-center" style="width: auto;" id="btn-open-course-modal">${plusIcon} Novo Curso</button>
               </div>
@@ -384,29 +505,21 @@ function renderTabContent(tab, State) {
   }
 }
 
+import { AdminModal } from '../components/Modal/AdminModal.js';
+
 function renderAllModals() {
   // Instead of returning HTML to be nested inside the animated view, we inject it into the body
   if (!document.getElementById('admin-modal-container')) {
     const div = document.createElement('div');
     div.id = 'admin-modal-container';
-    div.innerHTML = `
-      <div id="modal-container" class="modal-overlay hidden">
-        <div class="modal-content animate-slide-up" style="max-width: 440px;">
-          <div class="flex-between-center p-24 border-bottom">
-            <h3 class="fw-bold text-lg m-0" id="modal-title">Editar Item</h3>
-            <button class="btn-icon close-modal">&times;</button>
-          </div>
-          <div id="modal-body" class="p-24"></div>
-        </div>
-      </div>
-    `;
+    div.innerHTML = AdminModal();
     document.body.appendChild(div);
   }
   return '';
 }
 
 export function setupAdminInteractions(State, onNavigate) {
-  const refresh = () => onNavigate('admin');
+  const refresh = () => onNavigate('admin', true);
   const modal = document.getElementById('modal-container');
   const modalBody = document.getElementById('modal-body');
   const modalTitle = document.getElementById('modal-title');
@@ -447,8 +560,13 @@ export function setupAdminInteractions(State, onNavigate) {
     btnOpenProf.onclick = () => {
       openModal('Novo Professor', `
       <form id="form-prof" class="flex-col gap-16">
+        <div id="prof-error" class="text-danger text-sm mb-4 hidden p-8 border border-danger border-radius-4" style="background: var(--danger-light);"></div>
         <div class="input-group m-0"><label>Nome Completo</label><input type="text" name="name" class="input-field" placeholder="Ex: Carlos Andrade" required></div>
         <div class="input-group m-0"><label>Matéria / Especialidade</label><input type="text" name="subject" class="input-field" placeholder="Ex: Matemática" required></div>
+        <div class="grid-2-cols gap-16">
+           <div class="input-group m-0"><label>RG</label><input type="text" name="rg" class="input-field" placeholder="00.000.000-0" required></div>
+           <div class="input-group m-0"><label>CPF</label><input type="text" name="cpf" class="input-field" placeholder="000.000.000-00" required></div>
+        </div>
         <div class="grid-2-cols gap-16">
           <div class="input-group m-0"><label>Credencial de Acesso</label><input type="text" name="id" class="input-field" placeholder="Ex: carlos123"></div>
           <div class="input-group m-0"><label>Senha Inicial</label><input type="text" name="password" class="input-field" value="admin123" placeholder="Senha"></div>
@@ -463,9 +581,29 @@ export function setupAdminInteractions(State, onNavigate) {
     document.querySelector('.close-modal-btn').onclick = closeModal;
     document.getElementById('form-prof').onsubmit = (e) => {
       e.preventDefault();
-      const fd = new FormData(e.target);
-      State.registerProfessor(Object.fromEntries(fd));
-      closeModal(); refresh();
+      const form = e.target;
+      const errorDiv = document.getElementById('prof-error');
+      const rg = form.rg.value.trim();
+      const cpf = form.cpf.value.replace(/\D/g, '');
+
+      if (rg.length < 5 || !/^[0-9.-]+$/.test(rg)) {
+        errorDiv.textContent = 'RG inválido.';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      if (cpf.length !== 11) {
+        errorDiv.textContent = 'CPF deve ter 11 dígitos.';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      errorDiv.classList.add('hidden');
+      const fd = new FormData(form);
+      const res = State.registerProfessor(Object.fromEntries(fd));
+      if (res.success) {
+        Notifications.show('Docente Cadastrado', res.message, 'success');
+        closeModal(); refresh();
+      } else alert(res.message);
     };
   };
   }
@@ -476,8 +614,13 @@ export function setupAdminInteractions(State, onNavigate) {
       openModal('Atualizar Professor', `
         <form id="form-prof-edit" class="flex-col gap-16">
           <input type="hidden" name="id_orig" value="${p.id}">
+          <div id="prof-edit-error" class="text-danger text-sm mb-4 hidden p-8 border border-danger border-radius-4" style="background: var(--danger-light);"></div>
           <div class="input-group m-0"><label>Nome Completo</label><input type="text" name="name" class="input-field" value="${p.name}" required></div>
           <div class="input-group m-0"><label>Matéria / Especialidade</label><input type="text" name="subject" class="input-field" value="${p.subject}" required></div>
+          <div class="grid-2-cols gap-16">
+             <div class="input-group m-0"><label>RG</label><input type="text" name="rg" class="input-field" value="${p.rg || ''}" required></div>
+             <div class="input-group m-0"><label>CPF</label><input type="text" name="cpf" class="input-field" value="${p.cpf || ''}" required></div>
+          </div>
           <div class="input-group m-0"><label>Senha de Acesso</label><input type="text" name="password" class="input-field" value="${p.password}" required></div>
           <div class="flex-row gap-12 mt-16 justify-end">
              <button type="submit" class="btn-primary w-auto px-24">Salvar Alterações</button>
@@ -486,8 +629,29 @@ export function setupAdminInteractions(State, onNavigate) {
       `);
       document.getElementById('form-prof-edit').onsubmit = (e) => {
         e.preventDefault();
-        State.registerProfessor(Object.fromEntries(new FormData(e.target)));
-        closeModal(); refresh();
+        const form = e.target;
+        const errorDiv = document.getElementById('prof-edit-error');
+        const rg = form.rg.value.trim();
+        const cpf = form.cpf.value.replace(/\D/g, '');
+
+        if (rg.length < 5 || !/^[0-9.-]+$/.test(rg)) {
+          errorDiv.textContent = 'RG inválido.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+        if (cpf.length !== 11) {
+          errorDiv.textContent = 'CPF deve ter 11 dígitos.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        const res = State.registerProfessor(Object.fromEntries(new FormData(form)));
+        if (res.success) {
+          Notifications.show('Atualizado', res.message, 'success');
+          closeModal(); refresh();
+        } else {
+          alert(res.message);
+        }
       };
     };
   });
@@ -548,8 +712,11 @@ export function setupAdminInteractions(State, onNavigate) {
       }
 
       errorDiv.classList.add('hidden');
-      State.registerStudent(Object.fromEntries(new FormData(form)));
-      closeModal(); refresh();
+      const res = State.registerStudent(Object.fromEntries(new FormData(form)));
+      if (res.success) {
+        Notifications.show('Aluno Matriculado', res.message, 'success');
+        closeModal(); refresh();
+      } else alert(res.message);
     };
   };
   }
@@ -613,8 +780,13 @@ export function setupAdminInteractions(State, onNavigate) {
         }
 
         errorDiv.classList.add('hidden');
-        State.registerStudent(Object.fromEntries(new FormData(form)));
-        closeModal(); refresh();
+        const res = State.registerStudent(Object.fromEntries(new FormData(form)));
+        if (res.success) {
+          Notifications.show('Cadastro Atualizado', res.message, 'success');
+          closeModal(); refresh();
+        } else {
+          alert(res.message);
+        }
       };
     };
   });
@@ -642,10 +814,42 @@ export function setupAdminInteractions(State, onNavigate) {
           id: document.getElementById('admin-id').value.trim(),
           password: document.getElementById('admin-pass').value
         });
-        if (res.success) { closeModal(); refresh(); } else alert(res.message);
+        if (res.success) { 
+          Notifications.show('Acesso Criado', res.message, 'success');
+          closeModal(); refresh(); 
+        } else alert(res.message);
       };
     };
   }
+
+  document.querySelectorAll('.edit-admin').forEach(btn => {
+    btn.onclick = () => {
+      const a = State.db.admins.find(x => x.id === btn.dataset.id);
+      if (!a) return;
+      openModal('Editar Gestor Administrativo', `
+        <form id="form-admin-edit" class="flex-col gap-16">
+          <input type="hidden" id="admin-id-orig" value="${a.id}">
+          <div class="input-group m-0"><label>Nome Completo</label><input type="text" id="admin-name" class="input-field" value="${a.name}" required></div>
+          <div class="input-group m-0"><label>Nova Senha (Opcional)</label><input type="password" id="admin-pass" class="input-field" placeholder="Deixe em branco para manter a atual"></div>
+          <div class="flex-row gap-12 mt-16 justify-end">
+             <button type="submit" class="btn-primary w-auto px-24">Salvar Alterações</button>
+          </div>
+        </form>
+      `);
+      document.getElementById('form-admin-edit').onsubmit = (e) => {
+        e.preventDefault();
+        const res = State.registerAdmin({
+          id_orig: document.getElementById('admin-id-orig').value,
+          name: document.getElementById('admin-name').value,
+          password: document.getElementById('admin-pass').value || a.password
+        });
+        if (res.success) { 
+          Notifications.show('Acesso Atualizado', res.message, 'success');
+          closeModal(); refresh(); 
+        } else alert(res.message);
+      };
+    };
+  });
 
   // COURSE CRUD
   const btnOpenCourse = document.getElementById('btn-open-course-modal');
@@ -666,8 +870,11 @@ export function setupAdminInteractions(State, onNavigate) {
           name: document.getElementById('course-name').value,
           id: document.getElementById('course-id').value.trim()
         };
-        State.registerCourse(data);
-        closeModal(); refresh();
+        const res = State.registerCourse(data);
+        if (res.success) {
+          Notifications.show('Curso Adicionado', res.message, 'success');
+          closeModal(); refresh();
+        } else alert(res.message);
       };
     };
   }
@@ -686,8 +893,11 @@ export function setupAdminInteractions(State, onNavigate) {
       `);
       document.getElementById('form-course-edit').onsubmit = (e) => {
         e.preventDefault();
-        State.registerCourse(Object.fromEntries(new FormData(e.target)));
-        closeModal(); refresh();
+        const res = State.registerCourse(Object.fromEntries(new FormData(e.target)));
+        if (res.success) {
+          Notifications.show('Curso Renomeado', res.message, 'success');
+          closeModal(); refresh();
+        } else alert(res.message);
       };
     };
   });
@@ -696,8 +906,11 @@ export function setupAdminInteractions(State, onNavigate) {
   document.querySelectorAll('.delete-item').forEach(btn => {
     btn.onclick = () => {
       if (confirm(`Tem certeza que deseja remover permanentemente este registro (${btn.dataset.type})?`)) {
-        State.deleteEntity(btn.dataset.id, btn.dataset.type);
-        refresh();
+        const res = State.deleteEntity(btn.dataset.id, btn.dataset.type);
+        if (res.success) {
+          Notifications.show('Item Removido', res.message, 'success');
+          refresh();
+        } else alert(res.message);
       }
     };
   });
@@ -777,40 +990,63 @@ export function setupAdminInteractions(State, onNavigate) {
     };
   }
 
-  // --- Student Search & Filter ---
+  // --- Student Search & Filter & Pagination ---
   const searchInput = document.getElementById('student-search-input');
   const shiftFilter = document.getElementById('student-shift-filter');
 
-  const filterStudents = () => {
-    const term = searchInput ? searchInput.value.toLowerCase() : '';
-    const shift = shiftFilter ? shiftFilter.value : '';
-
-    document.querySelectorAll('.student-row').forEach(row => {
-      const name = row.querySelector('.student-name')?.innerText.toLowerCase() || '';
-      const reg = row.querySelector('.student-reg')?.innerText.toLowerCase() || '';
-      const course = row.querySelector('.student-course')?.innerText.toLowerCase() || '';
-      const studentShift = row.querySelector('.student-shift')?.innerText.trim() || '';
-
-      const matchesSearch = name.includes(term) || reg.includes(term) || course.includes(term);
-      const matchesShift = shift === '' || studentShift === shift;
-
-      if (matchesSearch && matchesShift) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
-
-    // Check if any visible rows
-    const visibleRows = Array.from(document.querySelectorAll('.student-row')).some(r => r.style.display !== 'none');
-    const noResultsRow = document.getElementById('no-students-row');
-    if (noResultsRow) {
-       noResultsRow.style.display = visibleRows ? 'none' : '';
+  const updateFilters = () => {
+    const currentSearch = document.getElementById('student-search-input');
+    const currentShift = document.getElementById('student-shift-filter');
+    window.adminStudentSearch = currentSearch ? currentSearch.value : '';
+    window.adminStudentShift = currentShift ? currentShift.value : '';
+    window.adminStudentPage = 1; // Reset to page 1 on filter
+    
+    // Refresh content area with new filters/pagination
+    const contentArea = document.getElementById('admin-active-content');
+    if (contentArea) {
+       contentArea.innerHTML = renderTabContent(window.adminActiveTab, State);
+       setupAdminInteractions(State, onNavigate);
+       
+       // Refocus input if it was active
+       const newSearch = document.getElementById('student-search-input');
+       if (newSearch && window.adminStudentSearch) {
+          newSearch.focus();
+          newSearch.setSelectionRange(newSearch.value.length, newSearch.value.length);
+       }
     }
   };
 
-  if (searchInput) searchInput.addEventListener('input', filterStudents);
-  if (shiftFilter) shiftFilter.addEventListener('change', filterStudents);
+  if (searchInput) searchInput.addEventListener('input', updateFilters);
+  if (shiftFilter) shiftFilter.addEventListener('change', updateFilters);
+
+  // Pagination buttons
+  const prevBtn = document.getElementById('prev-students-page');
+  const nextBtn = document.getElementById('next-students-page');
+  
+  if (prevBtn) {
+    prevBtn.onclick = () => {
+      window.adminStudentPage = Math.max(1, (window.adminStudentPage || 1) - 1);
+      const contentArea = document.getElementById('admin-active-content');
+      contentArea.innerHTML = renderTabContent(window.adminActiveTab, State);
+      setupAdminInteractions(State, onNavigate);
+    };
+  }
+  if (nextBtn) {
+    nextBtn.onclick = () => {
+      window.adminStudentPage = (window.adminStudentPage || 1) + 1;
+      const contentArea = document.getElementById('admin-active-content');
+      contentArea.innerHTML = renderTabContent(window.adminActiveTab, State);
+      setupAdminInteractions(State, onNavigate);
+    };
+  }
+  document.querySelectorAll('[data-page]').forEach(btn => {
+    btn.onclick = () => {
+      window.adminStudentPage = parseInt(btn.dataset.page);
+      const contentArea = document.getElementById('admin-active-content');
+      contentArea.innerHTML = renderTabContent(window.adminActiveTab, State);
+      setupAdminInteractions(State, onNavigate);
+    };
+  });
 
   // --- Selection & Bulk Delete Logic ---
   const setupBulkActions = (type, listName) => {
@@ -850,22 +1086,19 @@ export function setupAdminInteractions(State, onNavigate) {
        const btnConfirm = document.getElementById('btn-confirm-bulk');
 
        if (btnCancel) btnCancel.onclick = closeModal;
-       if (btnConfirm) btnConfirm.onclick = () => {
-         selectedIds.forEach(id => {
-            const dbList = State.db[listName];
-            if (dbList) {
-               const idx = dbList.findIndex(x => x.id === id);
-               if (idx > -1) dbList.splice(idx, 1);
-            }
-         });
-         // Save back based on listName
-         if (listName === 'profs') State.db.saveProfessors(State.db.profs); // keep if fallback
-         else if (listName === 'professors') State.db.saveProfessors(State.db.professors);
-         else if (listName === 'students') State.db.saveStudents(State.db.students);
-         else if (listName === 'courses') State.db.saveCourses(State.db.courses);
-         closeModal();
-         refresh();
-       };
+        if (btnConfirm) btnConfirm.onclick = () => {
+          let list = [...(State.db[listName] || [])];
+          selectedIds.forEach(id => {
+            const idx = list.findIndex(x => x.id === id);
+            if (idx > -1) list.splice(idx, 1);
+          });
+          // Save back based on listName
+          if (listName === 'profs' || listName === 'professors') State.db.saveProfessors(list);
+          else if (listName === 'students') State.db.saveStudents(list);
+          else if (listName === 'courses') State.db.saveCourses(list);
+          closeModal();
+          refresh();
+        };
      });
   };
 
@@ -910,35 +1143,112 @@ export function setupAdminInteractions(State, onNavigate) {
   }
 
   // --- Export Logic ---
-  const handleExportCSV = (listName, headers, rowMapper) => {
-    const list = State.db[listName] || [];
-    let csv = headers.join(',') + '\n';
-    list.forEach(item => { csv += rowMapper(item).map(x => `"${x}"`).join(',') + '\n'; });
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `export_${listName}.csv`;
-    a.click();
+  const handleExportCSV = (data, filenameBase, headers, rowMapper) => {
+    const list = Array.isArray(data) ? data : (State.db[data] || []);
+    if (list.length === 0) {
+      alert('Não há dados para exportar.');
+      return;
+    }
+    
+    // Create CSV content with semicolon separator for better Excel compatibility in common locales
+    let csvContent = headers.join(';') + '\n';
+    list.forEach(item => {
+      const row = rowMapper(item).map(val => {
+        // Escape quotes and wrap in quotes if contains semicolon
+        let clean = String(val || '').replace(/"/g, '""');
+        return `"${clean}"`;
+      });
+      csvContent += row.join(';') + '\n';
+    });
+
+    // Add BOM for UTF-8 compatibility with Excel
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `lyra_export_${filenameBase}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    
+    // Close dropdowns
+    document.querySelectorAll('.export-menu').forEach(m => m.classList.add('hidden'));
   };
 
   const handlePrint = (printId) => {
-    const el = document.getElementById(printId);
-    if (!el) return;
-    const originalContent = document.body.innerHTML;
-    document.body.innerHTML = el.innerHTML;
-    window.print();
-    document.body.innerHTML = originalContent;
-    window.location.reload(); // Reload to re-bind events after tampering with body.innerHTML
+    const content = document.getElementById(printId);
+    if (!content) return;
+
+    // Create a hidden iframe for printing to avoid messing with current DOM/State
+    let printIframe = document.getElementById('print-iframe');
+    if (!printIframe) {
+      printIframe = document.createElement('iframe');
+      printIframe.id = 'print-iframe';
+      printIframe.style.display = 'none';
+      document.body.appendChild(printIframe);
+    }
+
+    const doc = printIframe.contentWindow.document;
+    doc.open();
+    doc.write(`
+      <html>
+        <head>
+          <title>Relatório Lyra</title>
+          <style>
+            body { font-family: sans-serif; padding: 20px; color: #333; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 12px 8px; text-align: left; font-size: 12px; }
+            th { background: #f5f5f5; font-weight: bold; }
+            .no-print, .btn-icon, .delete-item, input[type="checkbox"] { display: none !important; }
+            .pill { border: 1px solid #ccc; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+            h1 { font-size: 18px; margin-bottom: 4px; }
+            p { font-size: 12px; color: #666; margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          <h1>Relatório Institucional - Lyra</h1>
+          <p>Gerado em: ${new Date().toLocaleString()}</p>
+          ${content.innerHTML}
+        </body>
+      </html>
+    `);
+    doc.close();
+
+    // Small delay to ensure styles are loaded in iframe context
+    setTimeout(() => {
+      printIframe.contentWindow.focus();
+      printIframe.contentWindow.print();
+      // Close dropdowns
+      document.querySelectorAll('.export-menu').forEach(m => m.classList.add('hidden'));
+    }, 500);
   };
 
+  // Dropdown Toggles
+  document.querySelectorAll('.btn-export-toggle').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const target = btn.dataset.target;
+      const menu = document.getElementById(`export-menu-${target}`);
+      
+      // Close other menus
+      document.querySelectorAll('.export-menu').forEach(m => {
+        if (m !== menu) m.classList.add('hidden');
+      });
+      
+      menu?.classList.toggle('hidden');
+    };
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.export-menu').forEach(m => m.classList.add('hidden'));
+  });
+
   document.getElementById('btn-export-profs-csv')?.addEventListener('click', () => 
-     handleExportCSV('professors', ['Nome', 'ID', 'Especialidade'], p => [p.name, p.id, p.subject])
+     handleExportCSV(State.db.professors, 'professores', ['Nome', 'ID', 'Especialidade', 'RG', 'CPF'], p => [p.name, p.id, p.subject, p.rg, p.cpf])
   );
   document.getElementById('btn-export-students-csv')?.addEventListener('click', () => 
-     handleExportCSV('students', ['Nome', 'Matrícula', 'Curso', 'Turno'], s => [s.name, s.registration, s.courseName, s.shift])
+     handleExportCSV(State.db.students, 'alunos', ['Nome', 'Matrícula', 'Curso', 'Turno'], s => [s.name, s.registration, s.courseName, s.shift])
   );
   document.getElementById('btn-export-courses-csv')?.addEventListener('click', () => 
-     handleExportCSV('courses', ['Nome', 'Código'], c => [c.name, c.id])
+     handleExportCSV(State.db.courses, 'cursos', ['Nome', 'Código'], c => [c.name, c.id])
   );
 
   document.getElementById('btn-export-profs-pdf')?.addEventListener('click', () => handlePrint('print-profs'));

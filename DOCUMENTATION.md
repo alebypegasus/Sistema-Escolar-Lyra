@@ -1,83 +1,122 @@
-# Sistema Escolar Lyra - Documentação Técnica Detalhada
+# 🌌 Lyra - Documentação Técnica Completa (Vanilla Engine)
 
-O Sistema Escolar Lyra é uma Single Page Application (SPA) ultra-leve e de alta performance, projetada para a gestão acadêmica moderna. Baseado na filosofia de design *"Liquid Glass"*, o sistema prioriza a transparência, profundidade visual e uma experiência de usuário fluida.
-
----
-
-## 1. Arquitetura do Sistema (Engine & Core)
-
-O Lyra opera como um motor de renderização dinâmica que utiliza **Vanilla JavaScript** e **Template Injection**, evitando a complexidade de Virtual DOMs pesados.
-
-### 1.1. Fluxo de Inicialização (Bootstrap)
-1. **Ponto de Entrada**: O `index.html` carrega `script.js` como um módulo ES6.
-2. **Hidratação de Estado**: `store.js` gerencia a persistência via `localStorage`. Na primeira execução, os dados são extraídos de `/src/db/*.json`.
-3. **Roteamento Interno**: O sistema utiliza um `switch` de rotas no `script.js` que gerencia o estado da visualização sem recarregar a página, mantendo a reatividade através de funções de renderização (`renderApp()`).
-
-### 1.2. Padrões de Design: Liquid Glass
-- **Transparência Adaptativa**: Uso intensivo de `backdrop-filter: blur(20px)` e cores com canal alfa (RGBA).
-- **Hierarquia Visual**: Sombras suaves e bordas finas (1px) definem os limites dos componentes sem saturar a visão.
-- **Micro-interações**: Transições baseadas em curvas de Bezier cúbicas (`cubic-bezier(0.34, 1.56, 0.64, 1)`) proporcionam um feedback tátil e orgânico.
+Bem-vindo à documentação técnica do **Lyra**. Este documento detalha a arquitetura, as decisões de design e a lógica de implementação de um sistema de gestão acadêmica construído inteiramente com **tecnologias Web nativas (Vanilla)**.
 
 ---
 
-## 2. Gestão de Estado (Store Context)
+## 1. Arquitetura do Sistema (O Engine)
 
-O `store.js` implementa o padrão **Centralized State Object**, atuando como a única fonte de verdade da aplicação.
+O Lyra não utiliza frameworks como React ou Angular. Ele opera sobre um "Engine" de renderização customizado que utiliza **Template Injection** e **State Management** centralizado.
 
-### 2.1. Entidades Principais
-- **Students (Alunos)**: Dados biográficos, matrículas (RA), histórico acadêmico por semestre, médias e registros de frequência.
-- **Professors (Docentes)**: Especialidades vinculadas às disciplinas, horários e ID de registro.
-- **Admins (Gestores)**: Usuários com flag `isAdmin: true` que desbloqueiam o portal de Secretaria.
-- **Subjects (Disciplinas)**: Vinculam alunos a professores e armazenam notas e presenças.
+### 1.1. O Ponto de Entrada (`index.html` e `script.js`)
+O sistema começa com um arquivo HTML minimalista que serve apenas como contêiner (`<div id="app">`). 
+- **O Processo**: O `script.js` é carregado como `type="module"`. Ao iniciar, ele invoca o `bootstrap()`, que carrega o estado do `store.js` e decide qual página renderizar com base no status de login.
+- **Roteamento Interno**: 
+  ```javascript
+  function navigateTo(page, force = false) {
+    // 1. Verifica permissões de rota (ex: Admin only)
+    // 2. Altera o State.currentPage
+    // 3. Executa funções de renderização específicas (ex: renderDashboard)
+    // 4. Injeta o HTML gerado no DOM
+  }
+  ```
+  Isso garante que a aplicação seja uma **SPA (Single Page Application)** real: o usuário nunca sente um "refresh" de página.
 
-### 2.2. Persistência e Integridade
-O sistema utiliza um `DB_VERSION` para gerenciar migrações de esquema no `localStorage`. Sempre que uma mudança estrutural ocorre, o sistema detecta e re-sincroniza os dados, garantindo que o cache do navegador nunca corrompa a experiência.
-
----
-
-## 3. Segurança e Validações
-
-Camadas de integridade protegem os dados sensíveis:
-- **Regex Guarding**: CPF e RG são sanitizados e validados por comprimento e formato antes da persistência.
-- **Route Guards**: Verificações de permissão (`isAdmin`) impedem que alunos ou professores acessem rotas administrativas via manipulação de URL/Estado.
-- **Password Obfuscation**: Embora armazenadas localmente para fins de demonstração, as senhas são tratadas de forma isolada nos formulários e limpadas do estado volátil após o login.
-
----
-
-## 4. Detalhamento de Funcionalidades
-
-### 4.1. Secretaria (Admin Dashboard)
-- **Matrículas Bulk**: Ferramentas de exclusão em massa e exportação para CSV/PDF.
-- **Filtros Avançados**: Busca em tempo real por Nome/RA e filtro por Turno (Manhã, Tarde, Noite).
-- **Branding Engine**: Permite trocar a logomarca de toda a instituição (URL externa ou upload base64) e informações de rodapé instantaneamente.
-
-### 4.2. Perfil do Aluno (Expandable History)
-- **Academic Detail**: Botão "Ver Detalhes" que aciona um Accordion reativo para mostrar o histórico semestral completo.
-- **Indicadores de Performance**: Uso de cores semânticas (Verde/Vermelho) para sinalizar rapidamente notas acima ou abaixo da média (7.0) e frequência (75%).
-
-### 4.3. Sistema de Notificações
-- Sistema desacoplado em `notifications.js` que permite disparar alertas globais de sucesso ou erro, integrados ao fluxo de salvamento do `State`.
+### 1.2. Gestão de Estado e Otimização de Cache (`store.js`)
+A "Single Source of Truth" (Fonte Única de Verdade) do Lyra utiliza um sistema de persistência híbrida:
+- **Cache em Memória**: Para evitar gargalos de processamento ao converter JSON repetidamente, implementamos um cache em memória (`_cache`). Toda vez que uma lista (alunos, professores, cursos) é solicitada, o sistema verifica primeiro se ela já está em RAM.
+- **Sincronização Atômica**: Quando um dado é salvo, o cache é atualizado instantaneamente, e o `localStorage` é gravado em background, eliminando o "atraso" percebido em sistemas que dependem puramente de I/O de disco simulado.
 
 ---
 
-## 5. Estrutura de Arquivos
+## 2. Deep Dive: CSS & Design System (Liquid Glass)
 
-```text
-/src
-  /components     # Componentes reutilizáveis (NavBar, Footer)
-  /db             # Fontes de dados JSON iniciais
-  /pages          # Motores de renderização de cada página
-  script.js       # Orquestrador de rotas e eventos globais
-  store.js        # Lógica de negócio e acesso ao Banco de Dados
-  style.css       # Definições de variáveis de tema (Theming)
+O estilo visual do Lyra foi batizado de **Liquid Glass**, uma evolução do Glassmorphism focada em legibilidade e adaptabilidade.
+
+### 2.1. O Motor de Temas (Light & Dark)
+A troca de temas não recarrega a página. Ela altera um atributo global:
+```javascript
+document.documentElement.setAttribute('data-theme', 'dark');
 ```
+No CSS (`theme.css`), as variáveis se adaptam instantaneamente:
+- **Light mode**: `--bg-body: #f8fafc; --text-primary: #0f172a;`
+- **Dark mode**: `--bg-body: #09090b; --text-primary: #fafafa;`
+
+### 2.2. Efeitos de Profundidade e Movimento
+- **Backdrop Blur**: Utilizamos `backdrop-filter: blur(20px)` em componentes flutuantes (Navbar, Modais) para criar uma hierarquia visual onde o conteúdo parece "flutuar" sobre o fundo.
+- **Curvas de Bézier**: Todas as animações usam `cubic-bezier(0.34, 1.56, 0.64, 1)`. Isso faz com que os elementos tenham uma "física" de mola, sendo mais orgânicos que transições lineares de 0 a 100.
 
 ---
 
-## 6. Como Estender o Sistema
+## 3. Explicação de Processos e Lógica de Código
 
-Para adicionar uma nova página:
-1. Crie o arquivo em `src/pages/nova-pagina.js`.
-2. Exporte uma função `renderNovaPagina(container, State)`.
-3. Adicione a rota no `script.js` dentro da função `renderAppStructure()`.
-4. Vincule os eventos no `setupInteractions()` correspondente.
+### 3.1. Paginação e Performance Visual (Matrículas)
+Em sistemas com milhares de registros, renderizar tudo de uma vez trava a thread principal do JavaScript. O Lyra resolve isso com **Virtual Pagination**:
+- **O Processo**: O sistema calcula `const pagedStudents = filteredStudents.slice((page - 1) * 10, page * 10)`.
+- **Interatividade**: Ao trocar de página, o DOM não é apenas "limpado", mas re-injetado com as novas fatias de dados (slicing), garantindo que o navegador processe apenas o que está visível ao usuário.
+- **Navegação de Estado**: A página atual é mantida em memória global (`window.adminStudentPage`), permitindo que filtros e buscas reiniciem a contagem sem perder o contexto anterior.
+
+### 3.2. Busca Fuzzy (Filtro de Matrículas)
+Diferente de uma busca comum que exige o início exato da palavra, a nossa lógica refatorada em `admin.js` utiliza divisão de termos:
+- **A Lógica**: O sistema divide a sua pesquisa em palavras separadas (`.split(/\s+/)`). Ele então verifica se **todas** essas palavras existem combinadas no nome, matrícula ou curso do aluno.
+- **Resultado**: Se você digitar "Carlos Mat", o sistema encontrará "Carlos Andrade - Matrícula 2024", mesmo que "Mat" não esteja grudado em "Carlos".
+
+### 3.2. Exportação de Dados (CSV)
+Para gerar o CSV de forma funcional e segura:
+1.  **Formatamos os dados**: Transformamos arrays de objetos em strings separadas por ponto e vírgula (`;`).
+2.  **BOM (Byte Order Mark)**: Adicionamos `\ufeff` no início do arquivo. Sem isso, softwares como Excel não reconheceriam acentos brasileiros corretamente.
+3.  **Blob & Trigger**: Criamos um link virtual e disparamos um `.click()` programático no navegador para iniciar o download sem sair da página.
+
+### 3.3. Relatórios PDF (Injeção de Iframe)
+Para imprimir relatórios limpos (sem botões de interface):
+```javascript
+const printIframe = document.createElement('iframe');
+printIframe.style.display = 'none';
+// ... injetamos apenas o HTML da tabela ...
+printIframe.contentWindow.print();
+```
+Isso mantém a interface do app intacta enquanto o navegador foca apenas nos dados para impressão.
+
+---
+
+## 4. Comandos e Ciclo de Vida do Desenvolvimento
+
+O Lyra utiliza uma estrutura de build moderna e padronizada:
+
+### 4.1. Instalação de Dependências
+```bash
+npm install
+```
+Isso baixa as ferramentas de desenvolvimento necessárias (como o compilador TypeScript e o servidor Vite).
+
+### 4.2. Ambiente de Desenvolvimento
+```bash
+npm run dev
+```
+Inicia um servidor local com **Hot Reload**. Qualquer alteração nos arquivos `.js` ou `.css` reflete instantaneamente no navegador.
+
+### 4.3. Compilação de Produção
+```bash
+npm run build
+```
+Este comando executa o **Tree Shaking** e a **Minificação**. Ele remove comentários, espaços em branco e funções não utilizadas, gerando uma pasta `dist/` extremamente leve e otimizada para ser servida em qualquer servidor web.
+
+---
+
+## 5. Por que Vanilla? (No React, No Vue)
+
+O Lyra foi construído para provar a viabilidade de sistemas complexos sem a sobrecarga de frameworks modernos:
+1. **Performance Absoluta**: O tempo de carregamento inicial é próximo de zero (sub-100ms).
+2. **Sem Abstrações**: O código fala diretamente com o navegador, consumindo menos memória.
+3. **Longevidade**: Como não depende de bibliotecas externas, o código continuará funcionando perfeitamente em qualquer navegador moderno por décadas.
+
+---
+
+## 5. Auditoria de Tecnologias Usadas
+
+- **HTML5**: Estrutura semântica e acessibilidade.
+- **CSS3 Moderno**: Flexbox, CSS Grid, Custom Properties (Variáveis) e Animações.
+- **JS ES6+**: Modules, Arrow Functions, Template Literals e LocalStorage API.
+
+---
+*Este documento é gerado automaticamente pelo motor do Lyra e serve como guia de manutenção para desenvolvedores.*

@@ -6,6 +6,7 @@
    Deste modo as partes ficam mais limpas e isoladas.
    ========================================== */
 
+@import url('./index.css');
 @import url('./styles/reset.css');
 @import url('./styles/theme.css');
 @import url('./styles/components.css');
