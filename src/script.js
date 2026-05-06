@@ -2,58 +2,74 @@
  * ========================================================
  * ARQUIVO PRINCIPAL DE JAVASCRIPT (script.js)
  * Coração da nossa aplicação (Single Page Application - SPA).
- * Aqui configuramos:
- * 1. O carregamento da aplicação 
- * 2. Roteamento de telas (mudar de "página" sem carregar o browser)
- * 3. O sistema de entrada (login e logout)
- * 4. Interações globais e atalhos de teclado (Shortcuts)
+ * O objetivo de um SPA é nunca recarregar a página do navegador.
+ * Toda vez que o usuário navega, nós apenas apagamos o HTML
+ * de uma "div" e injetamos o HTML da próxima tela usando Javascript.
  * ========================================================
  */
 
+// Importa o Estado Global, que funciona como o cérebro que guarda
+// quem está logado, as funções do banco de dados (Store) etc.
 import { State } from './store.js';
-import { renderDashboard, setupDashboardInteractions } from './pages/dashboard.js';
-import { renderCourses, setupCourseInteractions } from './pages/courses.js';
-import { renderGrades, setupTeacherInteractions, setupStudentInteractions } from './pages/grades.js';
-import { renderProfile, setupProfileInteractions } from './pages/profile.js';
-import { Notifications } from './notifications.js';
-import { Modal, renderActionButtons } from './modal.js';
-import { renderStudentDetails, setupStudentDetailsInteractions } from './pages/studentDetails.js';
-import { renderAdmin, setupAdminInteractions } from './pages/admin.js';
-import { renderPresentation } from './pages/presentation.js';
 
-// Importando nossos Componentes isolados da Interface (Navbar, Header e Footer)
+// Importando as diferentes telas (páginas) que compõem o nosso App.
+// Cada página exporta: 
+// 1. `renderPagina`: Função que gera o HTML da página e joga na tela.
+// 2. `setupInteractions`: Função que "acorda" a tela, colocando ações (clicks) nos botões.
+import { renderDashboard, setupDashboardInteractions } from './pages/Dashboard/Dashboard.js';
+import { renderCourses, setupCourseInteractions } from './pages/Courses/Courses.js';
+import { renderGrades, setupTeacherInteractions, setupStudentInteractions } from './pages/Grades/Grades.js';
+import { renderProfile, setupProfileInteractions } from './pages/Profile/Profile.js';
+import { renderStudentDetails, setupStudentDetailsInteractions } from './pages/StudentDetails/StudentDetails.js';
+import { renderAdmin, setupAdminInteractions } from './pages/Admin/Admin.js';
+import { renderPresentation } from './pages/Presentation/Presentation.js';
+
+// Importa os Componentes Globais. Coisas que aparecem em quase todas as telas
+import { Notifications } from './components/Notification/Notification.js';
+import { Modal, renderActionButtons } from './components/Modal/Modal.js';
 import { getNavbarHTML, setupNavbarInteractions, updateNotificationBadge as updateNavbarBadge } from './components/Navbar/Navbar.js';
 import { getMainHTML, setGreeting, switchView } from './components/Main/Main.js';
 import { getFooterHTML } from './components/Footer/Footer.js';
-import { Skeleton } from './components/Skeleton/Skeleton.js';
+import { Skeleton } from './components/Skeleton/Skeleton.js'; // Skeleton = loading state que imita a tela
 
-import './style.css'; // Carrega nossos novos CSS automáticos
+// Importa o CSS principal
+import './style.css'; 
 
 /**
- * Evento Mestre: Ocorre quando todo o código HTML original (index.html) terminou de carregar.
- * Dá o pontapé inicial na aplicação
+ * Evento Mestre: `DOMContentLoaded`
+ * Isso é disparado pelo navegador assim que ele termina de ler todo o nosso index.html base.
+ * É aqui que damos "arranque" ao motor do App.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  applyBrandColor();
-  setupLogin(); // Inicia a escuta da tela de login
-  setupGlobalShortcuts(); // Inicia a escuta do teclado (Atalhos)
+  applyBrandColor(); // Injeta a cor da escola nas variáveis CSS (--accent-color)
+  setupLogin(); // Ativa os botões form da tela inicial
+  setupGlobalShortcuts(); // Ativa truques de teclado (Atalhos)
 });
 
+/**
+ * Cores da Escola customizáveis.
+ * Em um SaaS, precisamos trocar facilmente de cor dependendo de qual escola
+ * está acessando. Fazemos isso alterando Variáveis CSS (que estão no index.css)
+ * direto usando o Javascript.
+ */
 export function applyBrandColor() {
-  const color = State.getCustomColor();
-  if (color && color !== '#3b82f6') {
+  const color = State.getCustomColor(); // Puxa do DB
+  
+  if (color && color !== '#3b82f6') { // Se houver cor e não for padrão (azul)
+    // Document.documentElement = <HTML>
     document.documentElement.style.setProperty('--accent', color);
     document.documentElement.style.setProperty('--accent-color', color);
-    // Simple way to compute a light version with opacity (not perfect but works in modern browsers)
-    document.documentElement.style.setProperty('--accent-light', `${color}25`); 
+    document.documentElement.style.setProperty('--accent-light', `${color}25`); // Translucido
     document.documentElement.style.setProperty('--accent-hover', `${color}dd`); 
   } else {
+    // Se for o azul padrão, reseta (remover a property faz o CSS voltar pro :root original)
     document.documentElement.style.removeProperty('--accent');
     document.documentElement.style.removeProperty('--accent-color');
     document.documentElement.style.removeProperty('--accent-light');
     document.documentElement.style.removeProperty('--accent-hover');
   }
 
+  // Se houver config de dark/light vinda do admin...
   const themeConfig = State.getThemeConfig();
   const applyIfSet = (key, val) => {
      if (val) document.documentElement.style.setProperty(key, val);
@@ -68,39 +84,42 @@ export function applyBrandColor() {
 }
 
 /**
- * Função responsável por criar Atahos Inteligentes pelo teclado (Ex: Apertar "Enter" para Logar)
+ * Função responsável por criar Atahos Inteligentes pelo teclado (Acessibilidade + Produtividade)
  */
 function setupGlobalShortcuts() {
+  // 'keydown' detecta sempre que uma tecla "bater no fundo", melhor que keypress ou keyup pra isso.
   document.addEventListener('keydown', (e) => {
+    
     // ---- Tela de Login ----
     const loginScreen = document.getElementById('login-screen');
-    // Se a tela de login estiver visível na tela
+    // Se a tela de login não tem a classe 'hidden', ela está sendo exibida.
     if (!loginScreen.classList.contains('hidden')) {
-      if (e.key === 'Enter') {
-        e.preventDefault(); // Evita reload ou quebra de fluxo padrão
-        const btn = document.querySelector('#login-form button[type="submit"]');
-        if (btn) btn.click(); // Imita o clique do rato
+      if (e.key === 'Enter') { // Pressionou ENTER?
+        e.preventDefault(); // Evita reload ou quebra de fluxo (pra não enviar GET pro html)
+        const btn = document.querySelector('#login-form button[type="submit"]'); 
+        if (btn) btn.click(); // Imita um click físico do rato para invocar o setupLogin()
       }
-      return;
+      return; // "Para" o código aqui (ninguém além da tela de login nos importa se ela tá visível)
     }
 
-    // ---- Lançamento Répido de Notas ----
-    // Facilita a vida do professor em desfocar (blur) as inputs de notas pra atualizar direto.
+    // ---- Produtividade de Professores ----
+    // Permite lançar nota na input com "Enter" e já "tirar o foco" (gravar a nota).
     if (e.key === 'Enter' && document.activeElement && document.activeElement.classList.contains('grade-input')) {
       e.preventDefault();
-      document.activeElement.blur();
+      document.activeElement.blur(); // focus = clicar dentro // blur = clicar fora
       return;
     }
 
     // ---- Controles de Modais Universais ----
     const globalModal = document.getElementById('global-modal');
     if (globalModal && !globalModal.classList.contains('hidden')) {
-      // "Esc" pra fechar tudo rapidamente
+      // "Esc" para fechar a janelinha modal rapidamente
       if (e.key === 'Escape') {
         Modal.close();
       } 
-      // "Enter" p/ submeter forms dentro do modal (Mas evita se o usuário estiver digitando um textão no textarea)
+      // "Enter" p/ submeter forms dentro do modal.
       else if (e.key === 'Enter') {
+        // ...Mas não queremos fechar o modal se o usuário estiver digitando um textão multilinhas no textarea!
         if (document.activeElement.tagName !== 'TEXTAREA') {
           e.preventDefault();
           const confirmBtn = globalModal.querySelector('.btn-primary');
@@ -112,208 +131,100 @@ function setupGlobalShortcuts() {
 
     // ---- Atalhos Livres de Navbar (Alt + Numero) ----
     if (e.altKey) {
-      // Ao apertar Alt+1, vai pro dashboard
       if (e.key === '1') { e.preventDefault(); navigateTo('dashboard'); }
-      // Ao apertar Alt+2, vai pras disciplinas
       if (e.key === '2') { e.preventDefault(); navigateTo('courses'); }
-      // Ao apertar Alt+3, vai para as notas
       if (e.key === '3') { e.preventDefault(); navigateTo('grades'); }
-      // Ao apertar Alt+4, vai para conta
       if (e.key === '4') { e.preventDefault(); navigateTo('profile'); }
     }
   });
 }
 
-/**
- * LÓGICA DE LOGIN 
- * Verifica os campos inseridos, e se tudo OK, esconde a div do 
- * formulário e mostra o interior do App
- */
-function setupLogin() {
-  const loginForm = document.getElementById('login-form');
-  const loginToggle = document.getElementById('login-toggle');
-  const toggleLabelAcademic = document.getElementById('toggle-label-academic');
-  const toggleLabelAdmin = document.getElementById('toggle-label-admin');
-  let currentMode = 'academic';
-  
-  if(!loginForm) return;
-
-  const updateLoginUI = () => {
-    const btnSubmit = document.getElementById('btn-login-submit');
-    const userInput = document.getElementById('login-registration');
-    const userLabel = document.getElementById('label-user');
-    
-    if (currentMode === 'admin') {
-      loginToggle.classList.add('admin');
-      toggleLabelAdmin.classList.add('active');
-      toggleLabelAcademic.classList.remove('active');
-      userLabel.textContent = 'Login Administrativo';
-      userInput.placeholder = 'Ex: secretaria_01';
-      btnSubmit.textContent = 'Acessar Secretaria';
-    } else {
-      loginToggle.classList.remove('admin');
-      toggleLabelAdmin.classList.remove('active');
-      toggleLabelAcademic.classList.add('active');
-      userLabel.textContent = 'Matrícula / Usuário';
-      userInput.placeholder = 'p1 (Prof), 2024-0042 (Aluno)';
-      btnSubmit.textContent = 'Acessar Portal Acadêmico';
-    }
-  };
-
-  if (loginToggle) {
-    loginToggle.onclick = () => {
-      currentMode = currentMode === 'academic' ? 'admin' : 'academic';
-      updateLoginUI();
-    };
-  }
-
-  // Also allow clicking the labels
-  if (toggleLabelAcademic) {
-    toggleLabelAcademic.onclick = () => {
-      if (currentMode !== 'academic') {
-        currentMode = 'academic';
-        updateLoginUI();
-      }
-    };
-  }
-  if (toggleLabelAdmin) {
-    toggleLabelAdmin.onclick = () => {
-      if (currentMode !== 'admin') {
-        currentMode = 'admin';
-        updateLoginUI();
-      }
-    };
-  }
-
-  // Atualiza a logo se houver uma customizada no State
-  const loginLogo = document.querySelector('.logo-img-large');
-  if (loginLogo) loginLogo.src = State.getLogo();
-
-  // "Escuta" o submit (apertar botão ou pressionar 'enter')
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const reg = document.getElementById('login-registration').value.trim();
-    const pass = document.getElementById('login-password').value.trim();
-    const errorMsg = document.getElementById('login-error');
-    
-    errorMsg.classList.add('hidden');
-    
-    // Tentativa de login dependente do modo
-    let loginSuccess = false;
-    
-    if (currentMode === 'admin') {
-      // Validação específica para Admin
-      loginSuccess = State.login(reg, pass) && State.user.isAdmin;
-      if (!loginSuccess && State.user) {
-        // Se logou mas não é admin, desloga e avisa
-        State.logout();
-        loginSuccess = false;
-      }
-    } else {
-      // Validação acadêmica (Aluno/Professor)
-      loginSuccess = State.login(reg, pass) && !State.user.isAdmin;
-      if (!loginSuccess && State.user && State.user.isAdmin) {
-         // Se é admin tentando entrar no portal acadêmico, barramos para forçar o fluxo correto
-         State.logout();
-         loginSuccess = false;
-      }
-    }
-
-    if (loginSuccess) {
-      document.getElementById('login-screen').style.opacity = '0';
-      
-      setTimeout(() => {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('app-screen').classList.remove('hidden');
-        
-        renderAppStructure();
-        navigateTo('dashboard');
-        triggerInitialNotifications();
-      }, 400); 
-    } else {
-      errorMsg.classList.remove('hidden');
-      const inputs = loginForm.querySelectorAll('input');
-      inputs.forEach(input => {
-        input.classList.add('login-error-shake');
-        setTimeout(() => input.classList.remove('login-error-shake'), 400);
-      });
-    }
-  });
-}
+// O setupLogin isolado virou um module lá no /pages/Login
+import { setupLogin } from './pages/Login/Login.js';
 
 /**
- * MONTADOR E ESTRUTURADOR DA TELA PRINCIPAL DO APLICATIVO
- * Procura por 3 "buracos" no HTML (<div id="*-root">)
- * e injeta dinamicamente todo o código visual (Header, Footer, Navbar).
+ * ESTRUTURADOR DA TELA PRINCIPAL (APP SHELL)
+ * Chamada DEPOIS que o usuário faz Login e a senha bate (loginSuccess == true).
+ * Monta o Header, Nav, Main e Footer nos "Buracos" existentes lá no index.html.
  */
 function renderAppStructure() {
-  const navbarRoot = document.getElementById('navbar-root');
-  const mainRoot = document.getElementById('main-root');
-  const footerRoot = document.getElementById('footer-root');
+  const navbarRoot = document.getElementById('navbar-root'); // Barra Sup/Lateral
+  const mainRoot = document.getElementById('main-root'); // O "meião"
+  const footerRoot = document.getElementById('footer-root'); // O rodapé
 
+  // Pede os componentes que montem suas strings HTML
   navbarRoot.innerHTML = getNavbarHTML(State.user);
   mainRoot.innerHTML = getMainHTML();
   footerRoot.innerHTML = getFooterHTML();
 
-  // Aplica a Logo Customizada em todos os lugares
+  // Garante que todo lugar que deveria ter a logo, pega a logo certa do Banco.
   const currentLogo = State.getLogo();
   document.querySelectorAll('.logo-img, .logo-img-large, .nav-logo img').forEach(img => {
      img.src = currentLogo;
   });
 
+  // Dá "vida" a Navbar (Clicks para abrir menu celular, Logout, etc)
   setupNavbarInteractions(
-    navigateTo,
-    performLogout,
-    showNotificationHistory
+    navigateTo,          // Passamos o navigateTo para a Navbar conseguir mudar de tela
+    performLogout,       // Passamos o performLogout pro menu do usuário
+    showNotificationHistory // Função do sininho
   );
 }
 
 /**
- * DESLOGANDO: Destrui tudo visível voltando a tela estaca zero 
+ * DESLOGANDO
+ * Faz a ação contrária. Limpa state, amassa as telas, e reacende a Input de Login.
  */
 function performLogout() {
-  // Encerra sessão do store local
-  State.logout();
+  State.logout(); // State joga o "user: null"
   
-  // Esconde o APP
+  // O app-screen esconde tudo que envolve o "logado".
   document.getElementById('app-screen').classList.add('hidden');
   
-  // Esconde botões flutuantes caso existam
+  // Esconde Floating Action Buttons "Mais (+)"
   const fab = document.getElementById('fab-container');
   if (fab) fab.style.display = 'none';
   
-  // Re-mostra o Login
+  // Traz a tela preta de volta com opacidade e limpa o campo de senha.
   document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('login-screen').style.opacity = '1';
   document.getElementById('login-password').value = '';
 
-  // Limpa o HTML da Navbar, App e Footer para proteger as infos e poupar memória Web
+  // Limpa o App Shell da memória para ninguém xeretar o HTML depois do logoff.
   document.getElementById('navbar-root').innerHTML = '';
   document.getElementById('main-root').innerHTML = '';
   document.getElementById('footer-root').innerHTML = '';
 }
 
 /**
- * MARCAÇÕES E NOTIFICAÇÕES
+ * Pinta de vermelho a "bolinha" no sininho lá no canto superior direito
+ * caso haja notificações não lidas!
  */
 function updateNotificationBadge() {
-  if (!State.user) return;
+  if (!State.user) return; // Tem que tá logado
+  
+  // Pegamos a Array com isRead == false do usuário
   const unreads = State.getUnreadNotifications(State.user.id);
   const hasUnreads = unreads.length > 0;
   
-  // Atualiza usando a função do nosso Componente Navbar
+  // Dispara pro componente visual processar a bolinha vermelha.
   updateNavbarBadge(hasUnreads);
 }
 
+/**
+ * Mostra uma Modal com a lista inteira de Avisos/Alertas daquele aluno/adm
+ */
 function showNotificationHistory() {
   if (!State.user) return;
   const allNotifs = State.getAllUserNotifications(State.user.id);
   
+  // Concatenador de String HTML
   let html = `<div class="notification-list">`;
   
   if (allNotifs.length === 0) {
     html += `<p class="notification-empty">Nenhuma notificação no histórico.</p>`;
   } else {
+    // Para cada Notificação(n) monta o bloco..
     allNotifs.forEach(n => {
       const typeColor = n.type === 'success' ? 'var(--success-color)' :
                         n.type === 'danger' ? 'var(--danger-color)' :
@@ -323,7 +234,8 @@ function showNotificationHistory() {
         <div class="notification-item ${n.read ? 'read' : 'unread'}" style="border-left-color: ${typeColor};">
           <div class="notification-item-header">
             <span class="notification-item-title">
-              ${!n.read ? `<span class="notification-dot"></span>` : ''}
+               <!-- Dot = Bolinha vermelha pra avisar que é Não Lida -->
+              ${!n.read ? `<span class="notification-dot"></span>` : ''} 
               ${n.title}
             </span>
             <span class="notification-item-time">${new Date(n.date).toLocaleString('pt-BR')}</span>
@@ -335,48 +247,54 @@ function showNotificationHistory() {
   }
   
   html += `</div>`;
-  Modal.open('Histórico de Notificações', html);
+  Modal.open('Histórico de Notificações', html); // Taca na cara.
   
+  // Como ele abriu, eu chamo a função que tira a marcação "Nao Lida" de todas e recarrego a badgetzinha.
   State.markNotificationsAsRead(State.user.id);
   updateNotificationBadge();
 }
 
 /**
- * SISTEMA DE ROTEAMENTO INTERNO (SPA)
- * Com suporte a Skeleton Loading e Transições de mola.
+ * SISTEMA DE ROTEAMENTO (MUDAR DE TELAS)
+ * Toda vez que você navega pra algum lugar, essa função de SPA dita as regras.
+ * Ele mata o recheio do "Main" e coloca outro sem o browser dar *reload*.
  */
 function navigateTo(page, force = false) {
-  // Proteção de Rota: Apenas administradores acessam Documentação e Admin
+  // Proteção de Rota (Guard): Impede estudantes xeretas de digitar javascript pra forçar rota.
   if ((page === 'presentation' || page === 'admin') && !State.user.isAdmin) {
     page = 'dashboard';
   }
 
-  // Com o HTML modular, se a div não existe ainda (ex: antes de renderAppStructure), não execute.
+  // Verifica se o container Main ainda existe
   if(!document.getElementById(`page-${page}`)) return;
 
+  // Se já estou nela, ignoro... a não ser que eu te obrigue com "force = true". 
   if (State.currentPage === page && document.getElementById(`page-${page}`).innerHTML.trim() !== '' && !force) return;
   State.currentPage = page;
 
-  // Atualiza componentes visuais (Navbar, Header Central)
+  // Atualiza o subtítulo no topo
   let subtitle = '';
   if (State.user.isAdmin) {
     subtitle = 'Portal Administrativo • Gestão de Sistemas';
   } else if (page === 'presentation') {
     subtitle = 'Guia do Desenvolvedor • Arquitetura e Código';
   } else {
+    // Aluno mostra Nome do curso, Professor mostra Matéria
     subtitle = State.userType === 'student' ? `Matrícula: ${State.user.registration} • ${State.user.courseName || 'Geral'}` : `Professor(a) - ${State.user.subject}`;
   }
   
   setGreeting(State.user.name, subtitle);
   updateNotificationBadge();
-  renderActionButtons();
+  renderActionButtons(); // FAB Actions floating button config
 
-  // Troca a View Exibida (nosso component "Main") com animação de Bezier mola
+  // Switchview (No Main.js) lida com fazer a Animação bonitinha das telas entrarem e sairem
   switchView(page);
 
   const container = document.getElementById(`page-${page}`);
   
-  // 1. Mostrar o Skeleton primeiro para um feel dinâmico e agradável
+  // 1. Mostrar SKELETON! O que é skeleton?
+  // O app é local então ele instantaneamente carregaria a array de objetos JSON...
+  // Mas vamos simular que estamos puxando isso de um banco LENTO da nuvem.
   const isTeacher = State.userType === 'teacher';
   if (page === 'dashboard') {
     container.innerHTML = Skeleton.getDashboard(isTeacher);
@@ -386,13 +304,13 @@ function navigateTo(page, force = false) {
     container.innerHTML = `<div class="skeleton-base" style="height: 400px; width: 100%;"></div>`;
   }
 
-  // 2. Pequeno delay "fake" para carregar os dados reais com suavidade
-  // Isso garante que o usuário perceba a transição e a organização do layout
+  // 2. SetTimeout de 450 milesegundos depois....
+  // A animação de molinha acabou e vamos tacar o conteúdo VERDADEIRO na tela com os Dados!
   setTimeout(() => {
-    // Se o usuário mudou de página durante o delay, pare o processamento
+    // Prevenção se o maluco apertar em 3 páginas no mesmo tempo, o timeout só vai agir na última 
     if (State.currentPage !== page) return;
 
-    // Renderizar Conteúdo Específico Real
+    // Chama o Renderer correspondente com a Tela.
     if (page === 'dashboard') {
       renderDashboard(container, State);
       if (isTeacher) setupDashboardInteractions(State, navigateTo);
@@ -403,6 +321,7 @@ function navigateTo(page, force = false) {
     }
     else if (page === 'grades') {
       renderGrades(container, State);
+      // Aqui os alunos interagem de forma diferente de um teacher na mesma view, por isso dividimos!
       if (isTeacher) setupTeacherInteractions(State, navigateTo);
       else setupStudentInteractions(State, navigateTo);
     }
@@ -411,6 +330,7 @@ function navigateTo(page, force = false) {
       setupProfileInteractions(State, navigateTo);
     }
     else if (page === 'student-details') {
+      // Página do boletim invisível no menu
       renderStudentDetails(container, State);
       setupStudentDetailsInteractions(State, navigateTo);
     }
@@ -422,31 +342,42 @@ function navigateTo(page, force = false) {
       renderPresentation(container);
     }
 
-    // Bind Global para botões de visualizar estudantes (reutilizado em vários locais)
+    // Regra Global Especial:
+    // Diversas telas vão gerar "Aquele botão que dá pra abrir o portfólio de um Estudante por cima".
+    // Quando qualquer tela cospe um ".btn-view-student", isso aqui binda o clique a todos eles de forma central.
     document.querySelectorAll('.btn-view-student').forEach(btn => {
       btn.addEventListener('click', (e) => {
-         const sid = e.currentTarget.dataset.sid;
-         window.currentViewStudentId = sid;
-         navigateTo('student-details');
+         // Nós salvamos no dataset do DOM o UID dele ex: "dataset.sid" ou `data-sid="X"`
+         const sid = e.currentTarget.dataset.sid; 
+         window.currentViewStudentId = sid; // Salva para o componente filho resgatar quando mountar!
+         navigateTo('student-details'); // Muda SPA router
       });
     });
-  }, 450); // 450ms é o tempo ideal para casar com a animação de entrada com Bezier
+  }, 450);
 }
 
+/**
+ * Ao logar atirar Toast (Pop-ups curtos com bordazinha colorida na Direita) 
+ * caso tenhamos alunos fudidos ou nota baixa
+ */
 function triggerInitialNotifications() {
   if (State.userType === 'teacher') {
     const p = State.user;
     const allStudents = State.db.students;
     const lowAttStudents = [];
     
+    // Varre minha DB Mock interira
     allStudents.forEach(s => {
+      // Procurando na mochila deles se tem minha aula e se é a minha materia
       const sub = s.subjects.find(s_sub => s_sub.name === p.subject);
+      // Abaixo de 75% reprova!
       if (sub && sub.attendance < 75) {
         lowAttStudents.push(s.name);
       }
     });
 
     if (lowAttStudents.length > 0) {
+      // Se tiver mais que três fudeu muito vou truncar com slice
       lowAttStudents.slice(0, 3).forEach(name => {
         Notifications.show('Alerta de Frequência', `O aluno(a) ${name.split(' ')[0]} está com a frequência abaixo de 75%.`, 'warning');
       });
@@ -461,4 +392,6 @@ function triggerInitialNotifications() {
   }
 }
 
-export { navigateTo };
+// O que vaza desse arquivo pros outros é essa destruturação
+export { navigateTo, renderAppStructure, triggerInitialNotifications };
+

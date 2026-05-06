@@ -1,0 +1,82 @@
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.theme-switch {
+  display: inline-block;
+  height: 26px;
+  position: relative;
+  width: 50px;
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.slider {
+  background-color: var(--border-color);
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  justify-content: space-between;
+}
+
+.slider:before {
+  background-color: #fff;
+  bottom: 3px;
+  content: "";
+  height: 20px;
+  left: 3px;
+  position: absolute;
+  transition: .4s;
+  width: 20px;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.slider svg {
+  color: var(--text-secondary);
+  transition: .4s;
+  z-index: 1;
+}
+
+.slider .sun-icon {
+  margin-left: 2px;
+}
+
+.slider .moon-icon {
+  margin-right: 2px;
+}
+
+input:checked + .slider .sun-icon {
+  color: rgba(255,255,255,0.4);
+}
+
+input:not(:checked) + .slider .moon-icon {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}

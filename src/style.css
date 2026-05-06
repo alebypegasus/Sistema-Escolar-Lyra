@@ -7,6 +7,7 @@
    ========================================== */
 
 @import url('./index.css');
+@import url('./pages/Login/Login.css');
 @import url('./styles/reset.css');
 @import url('./styles/theme.css');
 @import url('./styles/components.css');

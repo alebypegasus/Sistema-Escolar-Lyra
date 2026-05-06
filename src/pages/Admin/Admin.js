@@ -9,7 +9,7 @@
  * ============================================================================
  */
 
-import { Notifications } from '../notifications.js';
+import { Notifications } from '../../components/Notification/Notification.js';
 
 export function renderAdmin(container, State) {
   // Verifica se o usuário atual tem a permissão de administrador ("Gestor")
@@ -32,6 +32,7 @@ export function renderAdmin(container, State) {
   container.innerHTML = `
     <div class="admin-dashboard-layout" style="display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: start; margin-top: 16px; min-height: 70vh;">
       
+      // CUSPINDO MENU LATERAL MODERNO C/ ABAS (Eles têm EventListener no Setup CTI)  
       <!-- MENU LATERAL -->
       <aside style="position: sticky; top: 100px; display: flex; flex-direction: column; gap: 24px;">
         <div class="card p-24 shadow-sm" style="background: linear-gradient(145deg, var(--bg-surface), var(--bg-panel));">
@@ -59,11 +60,12 @@ export function renderAdmin(container, State) {
         </nav>
       </aside>
 
-      <!-- CONTEÚDO PRINCIPAL -->
+      <!-- CONTEÚDO PRINCIPAL (Dinamico de Acordo com Aba Selecionada!) Mágico! -->
       <main id="admin-active-content" class="animate-slide-up" style="min-width: 0; padding-bottom: 64px;">
         ${renderTabContent(activeTab, State)}
       </main>
 
+      <!-- Ponto de Montagem das Modais Administrativas Nativas (Escondidas) -->
       <div id="admin-modals-root">
         ${renderAllModals(State)}
       </div>
@@ -505,7 +507,7 @@ function renderTabContent(tab, State) {
   }
 }
 
-import { AdminModal } from '../components/Modal/AdminModal.js';
+import { AdminModal } from '../../components/Modal/AdminModal.js';
 
 function renderAllModals() {
   // Instead of returning HTML to be nested inside the animated view, we inject it into the body
@@ -519,11 +521,15 @@ function renderAllModals() {
 }
 
 export function setupAdminInteractions(State, onNavigate) {
+  // Alias curto p/ dar Refresh violento (Forçar Remontar a SPA) via Router Local (onNavigate) apos edits CTI
   const refresh = () => onNavigate('admin', true);
+  
+  // Pegar Nodes (Divs) Centrais da Modal Administrativa Genérica Global
   const modal = document.getElementById('modal-container');
   const modalBody = document.getElementById('modal-body');
   const modalTitle = document.getElementById('modal-title');
 
+  // Helper Interno: Abre Modal (Muda o Titulo, Injeta o innerHTML sujo, e arranca o .hidden do CSS)
   const openModal = (title, content) => {
     modalTitle.innerText = title;
     modalBody.innerHTML = content;
@@ -535,26 +541,27 @@ export function setupAdminInteractions(State, onNavigate) {
   const closeBtn = modal?.querySelector('.close-modal');
   if(closeBtn) closeBtn.onclick = closeModal;
 
-  // TAB NAV
+  // TAB NAV - Lógica de Navegação das Abas Laterais "SPA Inception"
   document.querySelectorAll('[data-tab]').forEach(btn => {
     btn.onclick = () => {
+      // Usamos var Global de Janela (Window) p/ a SPA lembrar que aba o cara tava quando re-renderizar
       window.adminActiveTab = btn.dataset.tab;
       
-      // Update UI active state
+      // Update UI active state (Limpa de todo mundo)
       document.querySelectorAll('#admin-tabs .menu-item-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      btn.classList.add('active'); // Liga só no que clicou
       
-      // Re-render only the content area
+      // Re-render only the content area (Inject do renderTabContent q tem o SWitch Case Grandão lá de cima)
       const contentArea = document.getElementById('admin-active-content');
       if (contentArea) {
          contentArea.innerHTML = renderTabContent(window.adminActiveTab, State);
-         // Re-run setup to re-bind edit/delete buttons inside the new content
+         // Re-run setup to re-bind edit/delete buttons inside the new content (RE-BIND CAUSA Q O INNER-HTML MATOU OS EVENTS!!)
          setupAdminInteractions(State, onNavigate);
       }
     };
   });
 
-  // PROFESSOR CRUD
+  // PROFESSOR CRUD (Create, Read, Update, Delete) - Criação de Professores
   const btnOpenProf = document.getElementById('btn-open-prof-modal');
   if (btnOpenProf) {
     btnOpenProf.onclick = () => {
@@ -991,6 +998,7 @@ export function setupAdminInteractions(State, onNavigate) {
   }
 
   // --- Student Search & Filter & Pagination ---
+  // Sistema de Otimização no Client-Side! Nao bate no Servidor pra buscar aluno! Extremamente Rapido.
   const searchInput = document.getElementById('student-search-input');
   const shiftFilter = document.getElementById('student-shift-filter');
 
@@ -1001,17 +1009,17 @@ export function setupAdminInteractions(State, onNavigate) {
     window.adminStudentShift = currentShift ? currentShift.value : '';
     window.adminStudentPage = 1; // Reset to page 1 on filter
     
-    // Refresh content area with new filters/pagination
+    // Refresh content area with new filters/pagination (RE-render Force)
     const contentArea = document.getElementById('admin-active-content');
     if (contentArea) {
        contentArea.innerHTML = renderTabContent(window.adminActiveTab, State);
-       setupAdminInteractions(State, onNavigate);
+       setupAdminInteractions(State, onNavigate); // Fix Eventos Mortados pelo INnerHTML injection
        
-       // Refocus input if it was active
+       // Refocus input if it was active (Truque de UX pra nao perder foco de digitação apÓs RENDERIZAÇÃO SPA)
        const newSearch = document.getElementById('student-search-input');
        if (newSearch && window.adminStudentSearch) {
           newSearch.focus();
-          newSearch.setSelectionRange(newSearch.value.length, newSearch.value.length);
+          newSearch.setSelectionRange(newSearch.value.length, newSearch.value.length); // Poe cursor no final texto
        }
     }
   };

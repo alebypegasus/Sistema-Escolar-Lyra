@@ -1,6 +1,9 @@
 export function renderCourses(container, State) {
+  // O Módulo Cursos ('Meu Curso' para estudante / 'Gerir Cursos' para Admins)
   if (State.userType === 'student') {
     const s = State.user;
+    
+    // RENDER: Área do Aluno (Mostra a grade curricular)
     container.innerHTML = `
       <div class="card p-24 mb-24 flex-between-center flex-wrap gap-24 relative overflow-hidden" >
         <div class="flex-col gap-4 z-10">
@@ -8,28 +11,37 @@ export function renderCourses(container, State) {
           <p class="text-secondary text-sm">Você está matriculado(a) em: <strong class="text-primary">${s.courseName || 'Curso Padrão'}</strong></p>
         </div>
       </div>
+      
       <h3 class="fw-bold mb-16 text-lg" style="animation: liquid-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s backwards;">Minhas Disciplinas (Este Semestre)</h3>
+      
+      <!-- Grid System: Cria caixinhas pras disciplinas -->
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
         ${(s.subjects || []).map((sub, idx) => `
           <div class="card p-24 hover-fluid" >
             <h3 class="fw-bold mb-4 text-xl" style="color: var(--color-brand-primary)">${sub.name}</h3>
             <p class="text-secondary text-sm mb-24">Prof. ${sub.professor}</p>
+            
             <div class="flex-between-center text-xs text-secondary mb-8 font-medium tracking-wider uppercase">
               <span>Andamento do Semestre</span>
               <span class="text-primary">Em curso</span>
             </div>
+            <!-- Uma barrinha de progresso fake p/ UI ficar bonitinha pro aluno -->
             <div class="progress-bar-container" style="background: rgba(0,0,0,0.05); border: none;">
               <div class="progress-bar-fill progress-65" style="background: var(--color-brand-primary)"></div>
             </div>
           </div>
         `).join('')}
+        
+        <!-- Mensagem Fallback (SE o Array subjects não existir ou tiver tam >0 ) ! -->
         ${!(s.subjects && s.subjects.length > 0) ? `<p class="text-secondary text-sm">Você não possui disciplinas vinculadas no momento.</p>` : ''}
       </div>
     `;
   } else {
-    // Teacher Courses & Admin (Manage institution courses)
+    // VISÃO DE ADMIN: Gerenciar catálogo geral de cursos da instituição
     const p = State.user;
     const courses = State.db.courses || [];
+    
+    // Desenhamos a Tabela Matriz
     container.innerHTML = `
       <div class="card p-24 mb-24 flex-between-center flex-wrap gap-24 relative overflow-hidden" >
         <div class="flex-col gap-4 z-10">
@@ -52,6 +64,9 @@ export function renderCourses(container, State) {
           </thead>
           <tbody id="courses-tbody">
             ${courses.map(c => {
+              // Calculos Complexos "On The Fly"
+              // Quantos alunos existem nesse curso e separados por Turno?
+              // Lemos a Base 'Students' INTEIRA pra achar e somar!
               const studentsInCourse = (State.db.students || []).filter(s => s.courseId === c.id);
               const manha = studentsInCourse.filter(s => s.shift === 'Manhã').length;
               const tarde = studentsInCourse.filter(s => s.shift === 'Tarde').length;
@@ -66,6 +81,7 @@ export function renderCourses(container, State) {
                 <td>${noite} aluno(s)</td>
                 <td>
                   <div class="flex-between-center" style="gap: 8px;">
+                    <!-- 'data-id' 'data-name' servem pro JS ler no OnClick deles e saber QUEM eles vão editar -->
                     <button class="btn-edit-course btn-outline btn-outline-accent btn-sm w-full" data-id="${c.id}" data-name="${c.name}">Editar</button>
                     <button class="btn-delete-course btn-outline btn-outline-danger btn-sm w-full" data-id="${c.id}">Excluir</button>
                   </div>
@@ -83,21 +99,25 @@ export function renderCourses(container, State) {
 /**
  * CONFIGURAÇÃO DE INTERAÇÕES DE CURSOS
  * Lida com a edição e remoção de cursos para perfil de professor/admin
- * @param {Object} State Estado global
- * @param {Function} navigateTo Função de navegação
+ * @param {Object} State Estado global (a lousa de dados)
+ * @param {Function} navigateTo A função canivete d SPA (Recarrega o pedaço alterado)
  */
 export function setupCourseInteractions(State, navigateTo) {
+  // Ação de EDITAR curso na linha da Tabela
   document.querySelectorAll('.btn-edit-course').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      // Pega infos escondidas invisivelmente no botão do HTML!
       const id = e.target.dataset.id;
       const name = e.target.dataset.name;
       
-      import('../modal.js').then(({ Modal }) => {
+      // Dynamic Lazy Loading: Chama e injeta Modal na mémória RÁPIDO SÓ AGORA!
+      import('../../components/Modal/Modal.js').then(({ Modal }) => {
         Modal.open("Editar Curso", `
           <form id="modal-course-form" style="display: grid; gap: 16px;">
             <input type="hidden" id="modal-course-id" value="${id}">
             <div class="input-group">
               <label style="display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">Código do Curso</label>
+              <!-- Input Disabled. Códigos/IDs Nunca Podem Ser Editados em DBs pq quebra relações e tabelas. -->
               <input type="text" class="input-field" value="${id}" disabled>
             </div>
             <div class="input-group">
@@ -107,23 +127,29 @@ export function setupCourseInteractions(State, navigateTo) {
             <button type="submit" class="btn-primary" id="btn-modal-save-course">Salvar Alterações</button>
           </form>
         `, () => {
+          // Após tela injetar form acima... Penduramos evento no SUBMIT dele!
           document.getElementById('modal-course-form').addEventListener('submit', (ev) => {
-            ev.preventDefault();
-            const newName = document.getElementById('modal-course-name').value.trim();
-            if (!newName) return;
+            ev.preventDefault(); // Sem prevent, a pág DÁ RELOAD INTEIRO pisca tudo feio!
             
+            // Pega o dado novo digitado
+            const newName = document.getElementById('modal-course-name').value.trim();
+            if (!newName) return; // Segurança contra submit de espaço ' '
+            
+            // Altera Base Global Diretamente! CTI (Crud Total Institution)
             const courses = State.db.courses || [];
-            const index = courses.findIndex(c => c.id === id);
+            // "Me ache quem tem esse mesmo ID que o cara guardou na memória do Modal"
+            const index = courses.findIndex(c => c.id === id); 
             if (index > -1) {
               courses[index] = { id: id, name: newName };
               State.db.saveCourses(courses);
               
-              import('../notifications.js').then(({ Notifications }) => {
+              // PopUp Verdezinho
+              import('../../components/Notification/Notification.js').then(({ Notifications }) => {
                 Notifications.show('Cursos', 'Curso atualizado com sucesso.', 'success');
               });
               
               Modal.close();
-              navigateTo('courses');
+              navigateTo('courses', true); // Re-montao pedaço e as variaveis pra UI atualizar com novos dados.
             }
           });
         });
@@ -131,19 +157,22 @@ export function setupCourseInteractions(State, navigateTo) {
     });
   });
 
+  // Deletor Simples de Curso! (O Modal nativo window.confirm serve mt bm aq!)
   document.querySelectorAll('.btn-delete-course').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = e.target.dataset.id;
+      // Confirmação nativa rápida
       if (confirm(`Tem certeza que deseja remover o curso ${id}?`)) {
         let courses = State.db.courses;
+        // Pega todos os caras, exceto eu. Devolve no meu lugar. É igual matar alguem no JS. XD
         courses = courses.filter(c => c.id !== id);
         State.db.saveCourses(courses);
         
-        import('../notifications.js').then(({ Notifications }) => {
+        import('../../components/Notification/Notification.js').then(({ Notifications }) => {
           Notifications.show('Cursos', 'Curso excluído com sucesso.', 'success');
         });
         
-        navigateTo('courses');
+        navigateTo('courses', true); // Remonta a view pra sumir da tela tb.
       }
     });
   });
