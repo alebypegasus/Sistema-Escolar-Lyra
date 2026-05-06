@@ -58,18 +58,25 @@ export function setGreeting(name, subtitle) {
  * @param {string} pageId O ID do target (ex: dashboard, courses, grades, profile)
  */
 export function switchView(pageId) {
-  // 1. Pega TODAS as divs de view
-  const views = document.querySelectorAll('.page-view');
-  
-  // 2. Remove o active de todas (Para esconder e reinicializar animações)
-  views.forEach(v => {
-    v.classList.remove('active');
-  });
-
-  // 3. Pega a div ESPECÍFICA q vamos querer entrar
+  // 1. Pega a view atual ativa
+  const currentActive = document.querySelector('.page-view.active');
   const target = document.getElementById(`page-${pageId}`);
+  
+  if (currentActive === target) return;
+
+  // 2. Se houver algo ativo, ativa animação de saída
+  if (currentActive) {
+    currentActive.classList.add('exiting');
+    currentActive.classList.remove('active');
+    
+    // Pequeno tempo para a animação de saída (casando com o CSS)
+    setTimeout(() => {
+      currentActive.classList.remove('exiting');
+    }, 500);
+  }
+
+  // 3. Mostra a nova (E faz rodar a animação fadeIn do CSS)
   if (target) {
-    // 4. Mostra ela (E faz rodar a animação fadeIn do CSS)
     target.classList.add('active');
   }
 }

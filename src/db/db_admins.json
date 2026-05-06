@@ -1,0 +1,16 @@
+[
+  {
+    "id": "admin",
+    "name": "Administrador do Sistema",
+    "password": "admin",
+    "isAdmin": true,
+    "photo": "https://cdn-icons-png.flaticon.com/512/9706/9706593.png"
+  },
+  {
+    "id": "secretaria_01",
+    "name": "Ana Paula (Secretaria)",
+    "password": "123",
+    "isAdmin": true,
+    "photo": "https://i.pravatar.cc/150?u=secretaria_01"
+  }
+]

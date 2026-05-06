@@ -28,10 +28,13 @@
         <img src="https://cdn.brandfetch.io/idZAgjz-AF/w/172/h/40/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1770247213514" alt="Firjan Senai" class="logo-img-large" />
       </div>
 
-      <!-- Seleção de Portal -->
-      <div class="flex-row gap-4 mb-24 bg-panel border-radius-12 p-4" id="login-tabs">
-        <button class="flex-1 p-8 text-xs fw-bold border-radius-8 transition-all active" data-mode="academic">Portal Acadêmico</button>
-        <button class="flex-1 p-8 text-xs fw-bold border-radius-8 transition-all" data-mode="admin">Secretaria</button>
+      <!-- Seleção de Portal via Toggle Switch -->
+      <div class="toggle-switch-container">
+        <span id="toggle-label-academic" class="toggle-label active">Portal Acadêmico</span>
+        <div class="toggle-switch" id="login-toggle">
+          <div class="toggle-handler"></div>
+        </div>
+        <span id="toggle-label-admin" class="toggle-label">Secretaria</span>
       </div>
 
       <!-- O formulário onde preenchemos login e senha -->

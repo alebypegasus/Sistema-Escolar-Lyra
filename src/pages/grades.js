@@ -383,26 +383,39 @@ export function setupStudentInteractions(State, navigateTo) {
  * Lida com mudança de notas, buscas e presenças.
  */
 export function setupTeacherInteractions(State, navigateTo) {
-  // Salvar alterações de notas ao sair do input
+  // Salvar alterações de notas ao sair do input (Blur ou Change)
   document.querySelectorAll('.grade-input').forEach(input => {
-    input.addEventListener('change', (e) => {
+    // Escutamos o focus para guardar o valor original
+    input.addEventListener('focus', (e) => {
+      e.target.dataset.original = e.target.value;
+    });
+
+    input.addEventListener('blur', (e) => {
       const sid = e.target.dataset.sid;
       const sub = e.target.dataset.subject;
       const val = e.target.value;
+      const original = e.target.dataset.original;
 
-      if (State.updateGrade(sid, sub, val)) {
-        State.addNotification(sid, 'Nota Atualizada', `Sua nota na disciplina de ${sub} foi atualizada para ${val}.`, 'info');
-        
-        // Feedback Visual
-        const row = e.target.closest('tr');
-        row.classList.remove('row-saved');
-        void row.offsetWidth; // Força paint re-flow (reset na animação)
-        row.classList.add('row-saved');
+      // Só processa se o valor realmente mudou
+      if (val !== original) {
+        if (State.updateGrade(sid, sub, val)) {
+          State.addNotification(sid, 'Nota Atualizada', `Sua nota na disciplina de ${sub} foi atualizada para ${val}.`, 'info');
+          
+          // Feedback Visual de Mola na linha
+          const row = e.target.closest('tr');
+          row.classList.remove('row-saved');
+          void row.offsetWidth; // Force reflow
+          row.classList.add('row-saved');
 
-        const check = e.target.nextElementSibling;
-        if (check && check.classList.contains('check-feedback')) {
-          check.classList.add('show');
-          setTimeout(() => check.classList.remove('show'), 1500);
+          // Feedback visual sutil (Check) ao lado do input
+          const check = e.target.nextElementSibling;
+          if (check && (check.classList.contains('check-feedback') || check.tagName.toLowerCase() === 'svg')) {
+            check.classList.add('show');
+            setTimeout(() => check.classList.remove('show'), 2000);
+          }
+          
+          // Atualiza o original para futuras mudancas sem sair do foco se usar enter
+          e.target.dataset.original = val;
         }
       }
     });

@@ -131,36 +131,58 @@ function setupGlobalShortcuts() {
  */
 function setupLogin() {
   const loginForm = document.getElementById('login-form');
-  const loginTabs = document.getElementById('login-tabs');
+  const loginToggle = document.getElementById('login-toggle');
+  const toggleLabelAcademic = document.getElementById('toggle-label-academic');
+  const toggleLabelAdmin = document.getElementById('toggle-label-admin');
   let currentMode = 'academic';
   
   if(!loginForm) return;
 
-  // Login Tabs Interaction
-  if (loginTabs) {
-    const tabs = loginTabs.querySelectorAll('button');
-    tabs.forEach(tab => {
-      tab.onclick = () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentMode = tab.dataset.mode;
-        
-        // Update placeholders/labels
-        const btnSubmit = document.getElementById('btn-login-submit');
-        const userInput = document.getElementById('login-registration');
-        const userLabel = document.getElementById('label-user');
-        
-        if (currentMode === 'admin') {
-          userLabel.textContent = 'Login Administrativo';
-          userInput.placeholder = 'Ex: secretaria_01';
-          btnSubmit.textContent = 'Acessar Secretaria';
-        } else {
-          userLabel.textContent = 'Matrícula / Usuário';
-          userInput.placeholder = 'p1 (Prof), 2024-0042 (Aluno)';
-          btnSubmit.textContent = 'Acessar Portal Acadêmico';
-        }
-      };
-    });
+  const updateLoginUI = () => {
+    const btnSubmit = document.getElementById('btn-login-submit');
+    const userInput = document.getElementById('login-registration');
+    const userLabel = document.getElementById('label-user');
+    
+    if (currentMode === 'admin') {
+      loginToggle.classList.add('admin');
+      toggleLabelAdmin.classList.add('active');
+      toggleLabelAcademic.classList.remove('active');
+      userLabel.textContent = 'Login Administrativo';
+      userInput.placeholder = 'Ex: secretaria_01';
+      btnSubmit.textContent = 'Acessar Secretaria';
+    } else {
+      loginToggle.classList.remove('admin');
+      toggleLabelAdmin.classList.remove('active');
+      toggleLabelAcademic.classList.add('active');
+      userLabel.textContent = 'Matrícula / Usuário';
+      userInput.placeholder = 'p1 (Prof), 2024-0042 (Aluno)';
+      btnSubmit.textContent = 'Acessar Portal Acadêmico';
+    }
+  };
+
+  if (loginToggle) {
+    loginToggle.onclick = () => {
+      currentMode = currentMode === 'academic' ? 'admin' : 'academic';
+      updateLoginUI();
+    };
+  }
+
+  // Also allow clicking the labels
+  if (toggleLabelAcademic) {
+    toggleLabelAcademic.onclick = () => {
+      if (currentMode !== 'academic') {
+        currentMode = 'academic';
+        updateLoginUI();
+      }
+    };
+  }
+  if (toggleLabelAdmin) {
+    toggleLabelAdmin.onclick = () => {
+      if (currentMode !== 'admin') {
+        currentMode = 'admin';
+        updateLoginUI();
+      }
+    };
   }
 
   // Atualiza a logo se houver uma customizada no State
@@ -344,7 +366,7 @@ function navigateTo(page) {
   updateNotificationBadge();
   renderActionButtons();
 
-  // Troca a View Exibida (nosso component "Main") com animação de Bezier
+  // Troca a View Exibida (nosso component "Main") com animação de Bezier mola
   switchView(page);
 
   const container = document.getElementById(`page-${page}`);

@@ -1,15 +1,17 @@
-import initialStudents from './db_students.json';
-import initialProfessors from './db_professors.json';
-import initialCourses from './db_courses.json';
-import initialNotifications from './db_notifications.json';
+import initialStudents from './db/db_students.json';
+import initialProfessors from './db/db_professors.json';
+import initialCourses from './db/db_courses.json';
+import initialNotifications from './db/db_notifications.json';
+import initialAdmins from './db/db_admins.json';
 
-const DB_VERSION = "14";
+const DB_VERSION = "15";
 
 // Initialize DB into LocalStorage
 if (localStorage.getItem('lyra_db_version') !== DB_VERSION) {
   localStorage.setItem('lyra_students', JSON.stringify(initialStudents));
   localStorage.setItem('lyra_professors', JSON.stringify(initialProfessors));
   localStorage.setItem('lyra_courses', JSON.stringify(initialCourses));
+  localStorage.setItem('lyra_admins', JSON.stringify(initialAdmins));
   localStorage.setItem('lyra_notifications', JSON.stringify(initialNotifications || []));
   localStorage.setItem('lyra_db_version', DB_VERSION);
 }
@@ -134,24 +136,10 @@ export const State = {
     let foundUser = null;
     let type = '';
 
-    // Admin backdoor para quando o banco estiver zerado
-    if (reg === 'admin' && pass === 'admin') {
-      this.user = {
-        id: 'admin',
-        name: 'Administrador do Sistema',
-        subject: 'Geral',
-        password: 'admin',
-        isAdmin: true,
-        photo: 'https://cdn-icons-png.flaticon.com/512/9706/9706593.png'
-      };
-      this.userType = 'teacher'; 
-      return true;
-    }
-
     const admin = this.db.admins.find(a => a.id === reg || a.id === reg.toLowerCase());
     if (admin && admin.password === pass) {
       this.user = admin;
-      this.userType = 'teacher';
+      this.userType = 'teacher'; // Admins use teacher interface/capabilities for some things but check isAdmin
       return true;
     }
 
@@ -331,4 +319,59 @@ export const State = {
   updateProfessor(id, data) {
     return this.registerProfessor({ ...data, id_orig: id });
   },
+
+  updateGrade(studentId, subjectName, newGrade) {
+    const students = this.db.students;
+    const student = students.find(s => s.id === studentId);
+    if (!student) return false;
+
+    const subject = student.subjects.find(sub => sub.name === subjectName);
+    if (!subject) return false;
+
+    subject.grade = parseFloat(newGrade);
+    
+    // Recalcular média global do aluno
+    const total = student.subjects.reduce((sum, s) => sum + (s.grade || 0), 0);
+    student.average = parseFloat((total / student.subjects.length).toFixed(1));
+
+    this.db.saveStudents(students);
+    return true;
+  },
+
+  togglePresence(studentId, subjectName, isPresent) {
+    const students = this.db.students;
+    const student = students.find(s => s.id === studentId);
+    if (!student) return false;
+
+    const subject = student.subjects.find(sub => sub.name === subjectName);
+    if (!subject) return false;
+
+    const today = new Date().toISOString().split('T')[0];
+    if (!subject.attendanceRecords) subject.attendanceRecords = [];
+
+    const existingIdx = subject.attendanceRecords.findIndex(r => r.date === today);
+    if (existingIdx > -1) {
+      subject.attendanceRecords[existingIdx].present = isPresent;
+    } else {
+      subject.attendanceRecords.push({
+        id: Math.random().toString(36).substring(2, 11),
+        date: today,
+        present: isPresent,
+        status: isPresent ? 'confirmed' : 'pending',
+        justification: null
+      });
+    }
+
+    // Recalcular frequência do aluno (%)
+    const totalDays = subject.attendanceRecords.length;
+    const presenceDays = subject.attendanceRecords.filter(r => r.present).length;
+    subject.attendance = totalDays > 0 ? Math.round((presenceDays / totalDays) * 100) : 100;
+
+    // Recalcular frequência global
+    const totalAtt = student.subjects.reduce((sum, s) => sum + (s.attendance || 0), 0);
+    student.attendance = Math.round(totalAtt / student.subjects.length);
+
+    this.db.saveStudents(students);
+    return true;
+  }
 };

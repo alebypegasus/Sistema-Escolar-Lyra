@@ -195,9 +195,17 @@ function renderTabContent(tab, State) {
                 <button class="btn-primary flex-align-center" style="width: auto;" id="btn-open-student-modal">${plusIcon} Matricular Aluno</button>
               </div>
             </div>
-            <div class="flex-row gap-12 flex-align-center bg-panel p-12 border-radius-8 border">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-secondary"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" id="student-search-input" class="bg-transparent border-none text-sm flex-1 outline-none" placeholder="Buscar por Nome, Matrícula ou Curso...">
+            <div class="flex-row gap-12 flex-align-center flex-wrap">
+              <div class="flex-row gap-12 flex-align-center bg-panel p-12 border-radius-8 border flex-1 min-w-250">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-secondary"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="student-search-input" class="bg-transparent border-none text-sm flex-1 outline-none" placeholder="Buscar por Nome, Matrícula ou Curso...">
+              </div>
+              <select id="student-shift-filter" class="input-field py-10 px-12 text-sm border-radius-8" style="width: auto; min-width: 140px; height: 44px;">
+                <option value="">Todos os Turnos</option>
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+              </select>
             </div>
           </div>
           <div class="table-wrapper border-none shadow-none border-radius-0" id="print-students">
@@ -525,14 +533,16 @@ export function setupAdminInteractions(State, onNavigate) {
       const rg = form.rg.value.trim();
       const cpf = form.cpf.value.replace(/\D/g, '');
 
-      if (rg.length < 5) {
-        errorDiv.textContent = 'Formato de RG inválido. Por favor, insira um RG válido.';
+      // Regex para validar RG (apenas números, pontos e traços permitidos na visualização, mas checar comprimento)
+      const rgRegex = /^[0-9.-]+$/;
+      if (!rgRegex.test(rg) || rg.length < 5) {
+        errorDiv.textContent = 'Formato de RG inválido. Use apenas números, pontos e traços.';
         errorDiv.classList.remove('hidden');
         return;
       }
       
-      if (cpf.length !== 11) {
-        errorDiv.textContent = 'Formato de CPF inválido. O CPF deve conter 11 dígitos numéricos.';
+      if (cpf.length !== 11 || !/^\d+$/.test(cpf)) {
+        errorDiv.textContent = 'Formato de CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.';
         errorDiv.classList.remove('hidden');
         return;
       }
@@ -589,14 +599,15 @@ export function setupAdminInteractions(State, onNavigate) {
         const rg = form.rg.value.trim();
         const cpf = form.cpf.value.replace(/\D/g, '');
 
-        if (rg && rg.length < 5) {
-          errorDiv.textContent = 'Formato de RG inválido. Por favor, insira um RG válido.';
+        const rgRegex = /^[0-9.-]+$/;
+        if (rg && (!rgRegex.test(rg) || rg.length < 5)) {
+          errorDiv.textContent = 'Formato de RG inválido. Use apenas números, pontos e traços.';
           errorDiv.classList.remove('hidden');
           return;
         }
         
-        if (cpf && cpf.length !== 11) {
-          errorDiv.textContent = 'Formato de CPF inválido. O CPF deve conter 11 dígitos numéricos.';
+        if (cpf && (cpf.length !== 11 || !/^\d+$/.test(cpf))) {
+          errorDiv.textContent = 'Formato de CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.';
           errorDiv.classList.remove('hidden');
           return;
         }
@@ -766,23 +777,40 @@ export function setupAdminInteractions(State, onNavigate) {
     };
   }
 
-  // --- Student Search ---
+  // --- Student Search & Filter ---
   const searchInput = document.getElementById('student-search-input');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase();
-      document.querySelectorAll('.student-row').forEach(row => {
-         const name = row.querySelector('.student-name')?.innerText.toLowerCase() || '';
-         const reg = row.querySelector('.student-reg')?.innerText.toLowerCase() || '';
-         const course = row.querySelector('.student-course')?.innerText.toLowerCase() || '';
-         if (name.includes(term) || reg.includes(term) || course.includes(term)) {
-           row.style.display = '';
-         } else {
-           row.style.display = 'none';
-         }
-      });
+  const shiftFilter = document.getElementById('student-shift-filter');
+
+  const filterStudents = () => {
+    const term = searchInput ? searchInput.value.toLowerCase() : '';
+    const shift = shiftFilter ? shiftFilter.value : '';
+
+    document.querySelectorAll('.student-row').forEach(row => {
+      const name = row.querySelector('.student-name')?.innerText.toLowerCase() || '';
+      const reg = row.querySelector('.student-reg')?.innerText.toLowerCase() || '';
+      const course = row.querySelector('.student-course')?.innerText.toLowerCase() || '';
+      const studentShift = row.querySelector('.student-shift')?.innerText.trim() || '';
+
+      const matchesSearch = name.includes(term) || reg.includes(term) || course.includes(term);
+      const matchesShift = shift === '' || studentShift === shift;
+
+      if (matchesSearch && matchesShift) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
     });
-  }
+
+    // Check if any visible rows
+    const visibleRows = Array.from(document.querySelectorAll('.student-row')).some(r => r.style.display !== 'none');
+    const noResultsRow = document.getElementById('no-students-row');
+    if (noResultsRow) {
+       noResultsRow.style.display = visibleRows ? 'none' : '';
+    }
+  };
+
+  if (searchInput) searchInput.addEventListener('input', filterStudents);
+  if (shiftFilter) shiftFilter.addEventListener('change', filterStudents);
 
   // --- Selection & Bulk Delete Logic ---
   const setupBulkActions = (type, listName) => {

@@ -1,71 +1,83 @@
-# Sistema Escolar Lyra - Documentação de Arquitetura
+# Sistema Escolar Lyra - Documentação Técnica Detalhada
 
-O Sistema Escolar Lyra é uma Single Page Application (SPA) baseada puramente em tecnologias Web Vanilla (HTML5, CSS3, e JavaScript ES6+). Seu design foi idealizado sob a filosofia *"Liquid Glass"*, priorizando transparências dinâmicas, responsividade fluida e interatividade profunda sem a necessidade de frameworks pesados (como React ou Angular).
-
----
-
-## 1. Visão Geral da Arquitetura
-
-O Lyra utiliza o padrão Model-View-Controller (MVC) simulado localmente.
-- **Model**: Gerenciado pelo arquivo `src/store.js`. Representa o banco de dados e os métodos de interação com os dados persistentes no cache do navegador (`localStorage`).
-- **View**: A UI é renderizada e manipulada através de templates de strings no Vanilla JS. Temos um arquivo responsável pela Navbar (`Navbar.js`), Footer (`Footer.js`) e corpo principal. O esqueleto carrega `src/components/Skeleton/Skeleton.js` como Loading Placeholder.
-- **Controller**: O fluxo, injeção, rotas e transição visual (fade in/out com mola) são coordenados pelo núcleo em `src/script.js`.
-
-### Ponto de Entrada
-- `index.html`: Hospeda as roots (`#login-screen` e `#app-screen`). O JavaScript assume a tela após o botão login via DOMContentLoaded.
-- `src/script.js`: Injeta e governa Views (`pages/*.js`) baseado no roteamento.
+O Sistema Escolar Lyra é uma Single Page Application (SPA) ultra-leve e de alta performance, projetada para a gestão acadêmica moderna. Baseado na filosofia de design *"Liquid Glass"*, o sistema prioriza a transparência, profundidade visual e uma experiência de usuário fluida.
 
 ---
 
-## 2. Padrões de Design e Identidade (Liquid Glass)
+## 1. Arquitetura do Sistema (Engine & Core)
 
-Nós implementamos layouts flutuantes através da manipulação do Z-Index e painéis com Back-drop Blur, usando Custom Properties puras.
-- **Variáveis de CSS Globais** em `style.css` permitem temas customizáveis.
-- **Glassmorfismo:** Elementos como o container administrativo e de relatórios têm propriedades que imitam o comportamento do vidro (translúcidos sobre fundos limpos).
-- **Feedback Haptic Simulado:** Os botões (`btn-primary`, `btn-outline`) escalam para `0.98` ao serem pressionados.
-- Tipografia baseada exclusivamente na família **Inter**, focada na facilidade de leitura e dados tabulares limpos nas grades.
+O Lyra opera como um motor de renderização dinâmica que utiliza **Vanilla JavaScript** e **Template Injection**, evitando a complexidade de Virtual DOMs pesados.
 
----
+### 1.1. Fluxo de Inicialização (Bootstrap)
+1. **Ponto de Entrada**: O `index.html` carrega `script.js` como um módulo ES6.
+2. **Hidratação de Estado**: `store.js` gerencia a persistência via `localStorage`. Na primeira execução, os dados são extraídos de `/src/db/*.json`.
+3. **Roteamento Interno**: O sistema utiliza um `switch` de rotas no `script.js` que gerencia o estado da visualização sem recarregar a página, mantendo a reatividade através de funções de renderização (`renderApp()`).
 
-## 3. Gestão de Estado & Persistência
-
-Utilizamos o padrão **Store (Singleton)** exportado pelo `store.js`. Este módulo absorve um "Mock de Banco de Dados" inicial formatado em JSON na primeira visita, e após isso persiste as mudanças pelo `localStorage`.
-- Quando um novo aluno é criado no Portal da Secretaria (`admin.js`), o código faz push no array correspondente, invocando `State.db.saveStudents(data)`. E todos os eventos subsequentes pegam automaticamente esse dado fresquinho.
-- Dados guardados incluem *Corpo Docente, Matrículas, Notificações, Configurações de Branding e Dados Institucionais*.
+### 1.2. Padrões de Design: Liquid Glass
+- **Transparência Adaptativa**: Uso intensivo de `backdrop-filter: blur(20px)` e cores com canal alfa (RGBA).
+- **Hierarquia Visual**: Sombras suaves e bordas finas (1px) definem os limites dos componentes sem saturar a visão.
+- **Micro-interações**: Transições baseadas em curvas de Bezier cúbicas (`cubic-bezier(0.34, 1.56, 0.64, 1)`) proporcionam um feedback tátil e orgânico.
 
 ---
 
-## 4. O Flow do Roteamento (Router)
+## 2. Gestão de Estado (Store Context)
 
-Quando uma navegação acontece via `navigateTo('dashboard')` em `script.js`:
-1. Uma verificação de integridade valida as permissões. (Ex: Aluno não acessa admin).
-2. Títulos auxiliares e Navbar badges são atualizados.
-3. Elementos do corpo ativam `opacity: 0` junto a animações de `bezier`.
-4. Os marcadores `#page-dashboard` injetam o Skeleton correspondente (card placeholder).
-5. Ocorre um timer simulando carregamento (Para UX feedback) e funções `renderDashboard(container)` finalmente disparam.
+O `store.js` implementa o padrão **Centralized State Object**, atuando como a única fonte de verdade da aplicação.
 
----
+### 2.1. Entidades Principais
+- **Students (Alunos)**: Dados biográficos, matrículas (RA), histórico acadêmico por semestre, médias e registros de frequência.
+- **Professors (Docentes)**: Especialidades vinculadas às disciplinas, horários e ID de registro.
+- **Admins (Gestores)**: Usuários com flag `isAdmin: true` que desbloqueiam o portal de Secretaria.
+- **Subjects (Disciplinas)**: Vinculam alunos a professores e armazenam notas e presenças.
 
-## 5. Portal Acadêmico vs Secretaria (Acessos)
-
-Estipula dois fluxogramas de operação baseados na FLAG de login:
-- **Alunos e Professores**: Possibilitam gerenciar notas, justificar frequência em tempo real (modal dinâmico) e ver Dashboard escolar.
-- **Administrativo / Secretaria**: Traz relatórios tabulares complexos, adição de grades através de modais interativos, edição bulk (em lotes) e alteração direta das configurações da marca da intituição, permitindo exportações em PDF e CSV de dados gerenciais.
+### 2.2. Persistência e Integridade
+O sistema utiliza um `DB_VERSION` para gerenciar migrações de esquema no `localStorage`. Sempre que uma mudança estrutural ocorre, o sistema detecta e re-sincroniza os dados, garantindo que o cache do navegador nunca corrompa a experiência.
 
 ---
 
-## 6. Lógica Dinâmica de Cores e Temas
+## 3. Segurança e Validações
 
-O sistema suporta injeções visuais interativas pela área de "Configurações" da Administração.
-- Utilizando FileReader (Base64), armazenamos cópias da logo carregada em LS e populamos as flags `--theme-*` via injeção CSS do JS para alterar globalmente o site, mantendo o DOM reactivo.
- 
-> *Nota: Você pode zerar o estado rodando o comando* `localStorage.clear()` *no terminal Web e apertando F5.*
+Camadas de integridade protegem os dados sensíveis:
+- **Regex Guarding**: CPF e RG são sanitizados e validados por comprimento e formato antes da persistência.
+- **Route Guards**: Verificações de permissão (`isAdmin`) impedem que alunos ou professores acessem rotas administrativas via manipulação de URL/Estado.
+- **Password Obfuscation**: Embora armazenadas localmente para fins de demonstração, as senhas são tratadas de forma isolada nos formulários e limpadas do estado volátil após o login.
 
 ---
 
-## Extensibilidade & Contribuições 🚀
+## 4. Detalhamento de Funcionalidades
 
-Para adicionar novas abas no modo Administador:
-- Modifique a UI de tabulação em `src/pages/admin.js`.
-- Crie o método de salvamento em `src/store.js`.
-- Ancore os manipuladores base em `setupAdminInteractions`.
+### 4.1. Secretaria (Admin Dashboard)
+- **Matrículas Bulk**: Ferramentas de exclusão em massa e exportação para CSV/PDF.
+- **Filtros Avançados**: Busca em tempo real por Nome/RA e filtro por Turno (Manhã, Tarde, Noite).
+- **Branding Engine**: Permite trocar a logomarca de toda a instituição (URL externa ou upload base64) e informações de rodapé instantaneamente.
+
+### 4.2. Perfil do Aluno (Expandable History)
+- **Academic Detail**: Botão "Ver Detalhes" que aciona um Accordion reativo para mostrar o histórico semestral completo.
+- **Indicadores de Performance**: Uso de cores semânticas (Verde/Vermelho) para sinalizar rapidamente notas acima ou abaixo da média (7.0) e frequência (75%).
+
+### 4.3. Sistema de Notificações
+- Sistema desacoplado em `notifications.js` que permite disparar alertas globais de sucesso ou erro, integrados ao fluxo de salvamento do `State`.
+
+---
+
+## 5. Estrutura de Arquivos
+
+```text
+/src
+  /components     # Componentes reutilizáveis (NavBar, Footer)
+  /db             # Fontes de dados JSON iniciais
+  /pages          # Motores de renderização de cada página
+  script.js       # Orquestrador de rotas e eventos globais
+  store.js        # Lógica de negócio e acesso ao Banco de Dados
+  style.css       # Definições de variáveis de tema (Theming)
+```
+
+---
+
+## 6. Como Estender o Sistema
+
+Para adicionar uma nova página:
+1. Crie o arquivo em `src/pages/nova-pagina.js`.
+2. Exporte uma função `renderNovaPagina(container, State)`.
+3. Adicione a rota no `script.js` dentro da função `renderAppStructure()`.
+4. Vincule os eventos no `setupInteractions()` correspondente.

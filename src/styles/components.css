@@ -12,7 +12,54 @@
   align-items: center;
   min-height: 100vh;
   background-color: transparent;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toggle-switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+  user-select: none;
+}
+
+.toggle-label.active {
+  color: var(--accent-color);
+}
+
+.toggle-switch {
+  width: 50px;
+  height: 26px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.toggle-handler {
+  width: 18px;
+  height: 18px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.toggle-switch.admin .toggle-handler {
+  transform: translateX(24px);
 }
 
 .login-card {
@@ -243,7 +290,14 @@ td:last-child {
 }
 
 .row-saved {
-  animation: bgGlow 1s ease;
+  animation: rowSpring 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes rowSpring {
+  0% { background-color: transparent; }
+  20% { background-color: var(--success-light); transform: scale(1.01); }
+  50% { background-color: var(--success-light); transform: scale(1); }
+  100% { background-color: transparent; }
 }
 
 .grade-row {
@@ -274,13 +328,14 @@ td:last-child {
 .check-feedback {
   opacity: 0;
   color: var(--success-color);
-  transform: scale(0.5);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform: scale(0.3) rotate(-15deg);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin-left: 8px;
+  pointer-events: none;
 }
 .check-feedback.show {
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1.2) rotate(0);
 }
 
 /* ==========================================
@@ -376,7 +431,7 @@ td:last-child {
   0% { 
     opacity: 0; 
     transform: translateY(20px) scale(0.96); 
-    filter: blur(4px);
+    filter: blur(8px);
   }
   100% { 
     opacity: 1; 
@@ -388,22 +443,23 @@ td:last-child {
 @keyframes pageExit {
   0% { 
     opacity: 1; 
-    transform: translateX(0); 
+    transform: translateY(0) scale(1); 
+    filter: blur(0);
   }
   100% { 
     opacity: 0; 
-    transform: translateX(-30px); 
+    transform: translateY(-20px) scale(0.96); 
+    filter: blur(8px);
   }
 }
 
 .page-view.active {
-  animation: pageEnter 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  animation: pageEnter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.page-view:not(.active) {
-  /* Mantemos o display none mas o JS pode lidar com a saída se quisermos algo mais complexo. 
-     Para performance vanilla, focamos na entrada impactante. */
-  display: none;
+.page-view.exiting {
+  animation: pageExit 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  pointer-events: none;
 }
 .flex-between-center {
   display: flex;

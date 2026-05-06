@@ -58,6 +58,50 @@ export function renderProfile(container, State) {
           <button type="submit" class="btn-primary" id="btn-save-profile">Salvar Alterações</button>
         ` : ''}
       </form>
+
+      ${!isAdmin && !isTeacher && State.userType === 'student' ? `
+        <div class="mt-32 pt-24 border-top">
+          <button id="btn-toggle-details" class="btn-outline w-full flex-between-center px-24 py-16 border-radius-12 transition-all hover:bg-panel">
+            <div class="flex-align-center gap-12">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="text-accent"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span class="fw-bold">Ver Histórico Acadêmico Detalhado</span>
+            </div>
+            <svg id="chevron-details" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="transition-all"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+
+          <div id="student-details-section" class="hidden animate-slide-up mt-24">
+            <h3 class="fw-bold mb-16" style="font-size: 18px;">Histórico de Semestres</h3>
+            <div class="flex-col gap-16">
+              ${(State.user.history || []).length > 0 ? State.user.history.map(hist => `
+                <div class="card p-20 bg-panel border">
+                  <div class="flex-between-center mb-16 pb-8 border-bottom">
+                    <span class="fw-bold">Semestre ${hist.semester}</span>
+                    <span class="pill outline-accent">Média: ${hist.gpa.toFixed(1)}</span>
+                  </div>
+                  <div class="grid-2-cols gap-12 flex-wrap">
+                    ${hist.subjects.map(sub => `
+                      <div class="bg-surface p-12 border-radius-8 border flex-col gap-4">
+                        <div class="text-xs fw-bold text-primary truncate" title="${sub.name}">${sub.name}</div>
+                        <div class="flex-between-center text-xs">
+                          <span class="text-secondary">Nota: <strong class="${sub.grade >= 7 ? 'text-success' : 'text-danger'}">${sub.grade.toFixed(1)}</strong></span>
+                          <span class="text-secondary">Freq: <strong class="${sub.attendance >= 75 ? 'text-primary' : 'text-danger'}">${sub.attendance}%</strong></span>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('') : '<p class="text-center p-24 text-secondary italic bg-panel border-radius-12">Nenhum histórico anterior encontrado.</p>'}
+            </div>
+            
+            <div class="mt-24 bg-accent-light p-16 border-radius-12 border" style="border-color: var(--accent-light);">
+               <h4 class="text-xs uppercase fw-bold text-accent mb-8">Resumo de Desempenho</h4>
+               <p class="text-sm text-secondary" style="line-height: 1.6;">
+                  Seu coeficiente de rendimento atual é calculado com base na média aritmética de todas as disciplinas cursadas até o momento. Mantenha sua frequência acima de 75% para evitar reprovação por faltas.
+               </p>
+            </div>
+          </div>
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -70,6 +114,25 @@ export function renderProfile(container, State) {
  */
 export function setupProfileInteractions(State, navigateTo) {
   const profileForm = document.getElementById('profile-form');
+  
+  // Toggle Detalhes Aluno
+  const btnToggle = document.getElementById('btn-toggle-details');
+  const detailsSection = document.getElementById('student-details-section');
+  const chevron = document.getElementById('chevron-details');
+  
+  if (btnToggle && detailsSection) {
+    btnToggle.onclick = () => {
+      const isHidden = detailsSection.classList.contains('hidden');
+      if (isHidden) {
+        detailsSection.classList.remove('hidden');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+      } else {
+        detailsSection.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      }
+    };
+  }
+
   if (profileForm) {
     profileForm.addEventListener('submit', (e) => {
       e.preventDefault();
